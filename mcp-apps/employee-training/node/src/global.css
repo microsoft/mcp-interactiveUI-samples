@@ -1,0 +1,77 @@
+:root {
+  color-scheme: light dark;
+
+  /* Host style variable fallbacks — the MCP host may override these */
+  --color-text-primary: light-dark(#1f2937, #f3f4f6);
+  --color-text-secondary: light-dark(#6b7280, #9ca3af);
+  --color-text-inverse: light-dark(#f3f4f6, #1f2937);
+  --color-text-info: light-dark(#1d4ed8, #60a5fa);
+  --color-text-success: light-dark(#15803d, #4ade80);
+  --color-text-warning: light-dark(#a16207, #fbbf24);
+  --color-text-error: light-dark(#dc2626, #f87171);
+  --color-background-primary: light-dark(#ffffff, #1a1a1a);
+  --color-background-secondary: light-dark(#f9fafb, #262626);
+  --color-background-inverse: light-dark(#1a1a1a, #ffffff);
+  --color-background-info: light-dark(#eff6ff, #1e3a5f);
+  --color-background-success: light-dark(#f0fdf4, #14532d);
+  --color-background-warning: light-dark(#fffbeb, #78350f);
+  --color-background-error: light-dark(#fef2f2, #7f1d1d);
+  --color-border-primary: light-dark(#e5e7eb, #374151);
+  --color-border-secondary: light-dark(#d1d5db, #4b5563);
+  --color-ring-primary: light-dark(#3b82f6, #60a5fa);
+  --border-radius-sm: 4px;
+  --border-radius-md: 6px;
+  --border-radius-lg: 8px;
+  --border-radius-xl: 12px;
+  --border-width-regular: 1px;
+  --font-sans: ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+  --font-text-sm-size: 0.875rem;
+  --font-text-sm-line-height: 1.4;
+  --font-text-md-size: 1rem;
+  --font-text-md-line-height: 1.5;
+  --font-heading-3xl-size: 2.25rem;
+  --font-heading-3xl-line-height: 1.1;
+  --font-heading-2xl-size: 1.875rem;
+  --font-heading-2xl-line-height: 1.2;
+  --font-heading-xl-size: 1.5rem;
+  --font-heading-xl-line-height: 1.25;
+  --font-heading-lg-size: 1.25rem;
+  --font-heading-lg-line-height: 1.3;
+  --font-heading-md-size: 1rem;
+  --font-heading-md-line-height: 1.4;
+  --font-heading-sm-size: 0.875rem;
+  --font-heading-sm-line-height: 1.4;
+
+  --spacing-unit: var(--font-text-md-size);
+  --spacing-xs: calc(var(--spacing-unit) * 0.25);
+  --spacing-sm: calc(var(--spacing-unit) * 0.5);
+  --spacing-md: var(--spacing-unit);
+  --spacing-lg: calc(var(--spacing-unit) * 1.5);
+  --spacing-xl: calc(var(--spacing-unit) * 2);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  font-family: var(--font-sans);
+  font-size: var(--font-text-md-size);
+  font-weight: var(--font-weight-normal);
+  line-height: var(--font-text-md-line-height);
+  color: var(--color-text-primary);
+  background: transparent;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#root {
+  width: 100%;
+}

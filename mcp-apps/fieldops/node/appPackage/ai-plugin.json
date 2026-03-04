@@ -1,0 +1,306 @@
+{
+    "$schema": "https://developer.microsoft.com/json-schemas/copilot/plugin/v2.4/schema.json",
+    "schema_version": "v2.4",
+    "name_for_human": "FieldOps",
+    "description_for_human": "FieldOpsdev",
+    "contact_email": "publisher-email@example.com",
+    "namespace": "fieldopsassist",
+    "functions": [
+        {
+            "name": "commit-assignments",
+            "description": "Commit a reviewed dispatch plan after explicit user confirmation (for example, user says Yes, assign them). Input must include final plan rows (assignmentId + technicianId + etaMinutes), including any manual overrides from the UI. Returns confirmation summary and per-assignment status for follow-up actions. Do not call this before create-dispatch-plan and user confirmation."
+        },
+        {
+            "name": "create-dispatch-plan",
+            "description": "Assigns technicians to assignments and renders a review-ready dispatch plan. Before creating the plan, perform a prerequisite data check: if assignments are not available, call list-new-assignments; if available technicians are not available, call get-available-technicians. This check must be performed before optimization and plan generation. Think hard before generating the plan. Then optimize technician-to-assignment pairing carefully, considering skills, ETA, distance, and workload continuity, and return mapping with reasons. Each planItem requires assignmentId, technicianId, and reason; etaMinutes is recommended, skillMatch and distanceKm are optional. The MCP server does not compute or alter assignment-technician mapping; it renders the mapping provided in planItems."
+        },
+        {
+            "name": "get-available-technicians",
+            "description": "Return currently available technicians and their dispatch metadata for planning. Input can include optional region filter. Output includes technician IDs, skills, current location, availability, rating, shift, and profile metadata so Copilot can choose assignment-technician pairings."
+        },
+        {
+            "name": "list-new-assignments",
+            "description": "Use this first for dispatch intake. Returns unassigned, recently created work orders (default: status=New and created in last 24 hours), optionally filtered by priority/region/team. Output includes assignment IDs, site, SLA due, required skills, status, and coordinates for downstream tools. Call before map or planning when user asks for new work."
+        },
+        {
+            "name": "show-assignments-on-map",
+            "description": "Render assignment pins on a Mapbox map view. Use after list-new-assignments and pass selected assignmentIds (or all returned IDs) to visualize location and inspect details. Returns map-ready pin payload and list metadata for map/list toggle. This is a read-only visualization tool and should not mutate dispatch state."
+        }
+    ],
+    "runtimes": [
+        {
+            "type": "RemoteMCPServer",
+            "spec": {
+                "url": "<your mcp server url>",
+                "x-mcp_tool_description": {
+                    "tools": [
+                        {
+                            "name": "list-new-assignments",
+                            "title": "List New Assignments",
+                            "description": "Use this first for dispatch intake. Returns unassigned, recently created work orders (default: status=New and created in last 24 hours), optionally filtered by priority/region/team. Output includes assignment IDs, site, SLA due, required skills, status, and coordinates for downstream tools. Call before map or planning when user asks for new work.",
+                            "inputSchema": {
+                                "type": "object",
+                                "properties": {
+                                    "priority": {
+                                        "type": "string",
+                                        "enum": [
+                                            "Low",
+                                            "Medium",
+                                            "High"
+                                        ],
+                                        "description": "Optional priority filter. Use High/Medium/Low to narrow returned assignments."
+                                    },
+                                    "region": {
+                                        "type": "string",
+                                        "description": "Optional region filter. Example: North, South, East, West."
+                                    },
+                                    "team": {
+                                        "type": "string",
+                                        "description": "Optional team filter. Example: Alpha, Beta."
+                                    },
+                                    "maxHoursOld": {
+                                        "type": "integer",
+                                        "minimum": 1,
+                                        "maximum": 168,
+                                        "description": "Optional recency window in hours. Defaults to 24 when omitted."
+                                    },
+                                    "maxResults": {
+                                        "type": "integer",
+                                        "minimum": 1,
+                                        "maximum": 100,
+                                        "description": "Optional max number of assignments to return. Defaults to 50."
+                                    }
+                                },
+                                "additionalProperties": false,
+                                "$schema": "http://json-schema.org/draft-07/schema#"
+                            },
+                            "annotations": {
+                                "readOnlyHint": true
+                            },
+                            "execution": {
+                                "taskSupport": "forbidden"
+                            },
+                            "_meta": {
+                                "ui": {
+                                    "resourceUri": "ui://fieldops/dispatch-list.html"
+                                },
+                                "ui/resourceUri": "ui://fieldops/dispatch-list.html"
+                            }
+                        },
+                        {
+                            "name": "show-assignments-on-map",
+                            "title": "Show Assignments on Map",
+                            "description": "Render assignment pins on a Mapbox map view. Use after list-new-assignments and pass selected assignmentIds (or all returned IDs) to visualize location and inspect details. Returns map-ready pin payload and list metadata for map/list toggle. This is a read-only visualization tool and should not mutate dispatch state.",
+                            "inputSchema": {
+                                "type": "object",
+                                "properties": {
+                                    "assignmentIds": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "string"
+                                        },
+                                        "description": "Optional list of assignment IDs to display. If omitted, the tool maps current default new assignments."
+                                    }
+                                },
+                                "additionalProperties": false,
+                                "$schema": "http://json-schema.org/draft-07/schema#"
+                            },
+                            "annotations": {
+                                "readOnlyHint": true
+                            },
+                            "execution": {
+                                "taskSupport": "forbidden"
+                            },
+                            "_meta": {
+                                "ui": {
+                                    "resourceUri": "ui://fieldops/dispatch-map.html"
+                                },
+                                "ui/resourceUri": "ui://fieldops/dispatch-map.html"
+                            }
+                        },
+                        {
+                            "name": "get-available-technicians",
+                            "description": "Return currently available technicians and their dispatch metadata for planning. Input can include optional region filter. Output includes technician IDs, skills, current location, availability, rating, shift, and profile metadata so Copilot can choose assignment-technician pairings.",
+                            "inputSchema": {
+                                "type": "object",
+                                "properties": {
+                                    "region": {
+                                        "type": "string",
+                                        "description": "Optional region filter to return technicians from a specific region."
+                                    }
+                                },
+                                "additionalProperties": false,
+                                "$schema": "http://json-schema.org/draft-07/schema#"
+                            },
+                            "annotations": {
+                                "readOnlyHint": true
+                            },
+                            "execution": {
+                                "taskSupport": "forbidden"
+                            },
+                            "_meta": {}
+                        },
+                        {
+                            "name": "create-dispatch-plan",
+                            "title": "Create Dispatch Plan",
+                            "description": "Assigns technicians to assignments and renders a review-ready dispatch plan. Before creating the plan, perform a prerequisite data check: if assignments are not available, call list-new-assignments; if available technicians are not available, call get-available-technicians. This check must be performed before optimization and plan generation. Think hard before generating the plan. Then optimize technician-to-assignment pairing carefully, considering skills, ETA, distance, and workload continuity, and return mapping with reasons. Each planItem requires assignmentId, technicianId, and reason; etaMinutes is recommended, skillMatch and distanceKm are optional. The MCP server does not compute or alter assignment-technician mapping; it renders the mapping provided in planItems.",
+                            "inputSchema": {
+                                "type": "object",
+                                "properties": {
+                                    "planItems": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "object",
+                                            "properties": {
+                                                "assignmentId": {
+                                                    "type": "string",
+                                                    "description": "Required assignment ID selected for dispatch."
+                                                },
+                                                "technicianId": {
+                                                    "type": "string",
+                                                    "description": "Required technician ID selected by the external matching/planning logic."
+                                                },
+                                                "reason": {
+                                                    "type": "string",
+                                                    "description": "Clear explanation of why this technician is assigned to this assignment."
+                                                },
+                                                "etaMinutes": {
+                                                    "type": "integer",
+                                                    "exclusiveMinimum": 0,
+                                                    "description": "Recommended ETA in minutes for technician arrival."
+                                                },
+                                                "skillMatch": {
+                                                    "type": "string",
+                                                    "enum": [
+                                                        "Full",
+                                                        "Partial"
+                                                    ],
+                                                    "description": "Optional skill match label from external matching result."
+                                                },
+                                                "distanceKm": {
+                                                    "type": "number",
+                                                    "minimum": 0,
+                                                    "description": "Optional travel distance in kilometers from technician to assignment."
+                                                }
+                                            },
+                                            "required": [
+                                                "assignmentId",
+                                                "technicianId",
+                                                "etaMinutes"
+                                            ],
+                                            "additionalProperties": false
+                                        },
+                                        "description": "Required final assignment-technician pairings produced by external planning logic. One item per assignment to plan."
+                                    },
+                                    "technicianIds": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "string"
+                                        },
+                                        "description": "Optional technician IDs from get-available-technicians output, used to populate the override dropdown in the UI."
+                                    },
+                                    "maxTravelKm": {
+                                        "type": "number",
+                                        "minimum": 1,
+                                        "maximum": 500,
+                                        "description": "Optional display constraint context for plan review. Defaults to 60."
+                                    },
+                                    "allowPartialSkillMatch": {
+                                        "type": "boolean",
+                                        "description": "Optional display constraint context. Defaults to true."
+                                    },
+                                    "travelBufferMinutes": {
+                                        "type": "integer",
+                                        "minimum": 0,
+                                        "maximum": 180,
+                                        "description": "Optional scheduling buffer between consecutive assignments for the same technician. Defaults to 30."
+                                    }
+                                },
+                                "required": [
+                                    "planItems"
+                                ],
+                                "additionalProperties": false,
+                                "$schema": "http://json-schema.org/draft-07/schema#"
+                            },
+                            "annotations": {
+                                "readOnlyHint": true
+                            },
+                            "execution": {
+                                "taskSupport": "forbidden"
+                            },
+                            "_meta": {
+                                "ui": {
+                                    "resourceUri": "ui://fieldops/dispatch-plan.html"
+                                },
+                                "ui/resourceUri": "ui://fieldops/dispatch-plan.html"
+                            }
+                        },
+                        {
+                            "name": "commit-assignments",
+                            "title": "Commit Assignments",
+                            "description": "Commit a reviewed dispatch plan after explicit user confirmation (for example, user says Yes, assign them). Input must include final plan rows (assignmentId + technicianId + etaMinutes), including any manual overrides from the UI. Returns confirmation summary and per-assignment status for follow-up actions. Do not call this before create-dispatch-plan and user confirmation.",
+                            "inputSchema": {
+                                "type": "object",
+                                "properties": {
+                                    "assignments": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "object",
+                                            "properties": {
+                                                "assignmentId": {
+                                                    "type": "string",
+                                                    "description": "Required assignment ID to commit."
+                                                },
+                                                "technicianId": {
+                                                    "type": "string",
+                                                    "description": "Required final technician ID to assign."
+                                                },
+                                                "etaMinutes": {
+                                                    "type": "integer",
+                                                    "exclusiveMinimum": 0,
+                                                    "description": "Required final ETA in minutes for commit summary."
+                                                }
+                                            },
+                                            "required": [
+                                                "assignmentId",
+                                                "technicianId",
+                                                "etaMinutes"
+                                            ],
+                                            "additionalProperties": false
+                                        },
+                                        "description": "Required final assignment rows to commit. Use reviewed plan rows from create-dispatch-plan output."
+                                    }
+                                },
+                                "required": [
+                                    "assignments"
+                                ],
+                                "additionalProperties": false,
+                                "$schema": "http://json-schema.org/draft-07/schema#"
+                            },
+                            "annotations": {
+                                "readOnlyHint": false,
+                                "destructiveHint": false,
+                                "openWorldHint": false
+                            },
+                            "execution": {
+                                "taskSupport": "forbidden"
+                            },
+                            "_meta": {
+                            }
+                        }
+                    ]
+                }
+            },
+            "run_for_functions": [
+                "commit-assignments",
+                "create-dispatch-plan",
+                "get-available-technicians",
+                "list-new-assignments",
+                "show-assignments-on-map"
+            ],
+            "auth": {
+                "type": "None"
+            }
+        }
+    ]
+}

@@ -1,0 +1,18 @@
+{
+    "version": "v1.6",
+    "name": "Learning",
+    "description": "Declarative agent created with Microsoft 365 Agents Toolkit can assist user in calling MCP Servers",
+    "instructions": "You are a declarative agent created with Microsoft 365 Agents Toolkit. You should answer the questions and help the user.",
+    "conversation_starters": [
+        {
+			"title": "Sample conversation starters",
+			"text": "Hi! What can you do for me?"
+		}
+    ],
+    "actions": [
+        {
+            "id": "action_1",
+            "file": "ai-plugin.json"
+        }
+    ]
+}

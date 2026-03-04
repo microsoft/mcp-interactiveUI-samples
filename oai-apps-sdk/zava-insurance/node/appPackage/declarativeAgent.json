@@ -1,0 +1,65 @@
+{
+    "version": "v1.6",
+    "name": "zava-mcp-agent01${{APP_NAME_SUFFIX}}",
+    "description": "Declarative agent created with Microsoft 365 Agents Toolkit can assist user in calling MCP Servers",
+    "instructions": "$[file('instruction.txt')]",
+    "conversation_starters": [
+        {
+			"title": "Claims dashboard",
+			"text": "Show the claims dashboard"
+		},
+        {
+			"title": "Open claims by loss",
+			"text": "Show me all open claims sorted by estimated loss from highest to lowest"
+		},
+        {
+			"title": "Claim details & inspections",
+			"text": "Show me Kimberly King's claim details, and tell me what inspections are pending"
+		},
+        {
+			"title": "Roofing contractors",
+			"text": "Show me the preferred roofing contractors"
+		},
+        {
+			"title": "Approve & refresh",
+			"text": "Approve claim 2 with a note that all documentation has been verified, then show me the updated dashboard"
+		},
+        {
+			"title": "Create inspection",
+			"text": "Create a high-priority initial inspection for claim CN202504990 scheduled for next Monday, and assign it to an inspector who specializes in fire damage"
+		},
+        {
+			"title": "Top losses & patterns",
+			"text": "Which claims have the highest estimated losses? Show me the top ones and compare their damage types"
+		},
+        {
+			"title": "Multi-step update",
+			"text": "Show the claim detail for claim 1. Then approve the pending purchase order and mark the inspection as completed with findings noting that all repairs are satisfactory"
+		}
+    ],
+    "capabilities": [
+        {
+            "name": "EmbeddedKnowledge",
+            "files": [
+                {
+                    "file": "EmbeddedKnowledge/Claims_Inspection_Guidelines.pdf"
+                },
+                {
+                    "file": "EmbeddedKnowledge/Pacific Water Restoration-Pricing.pdf"
+                },
+                {
+                    "file": "EmbeddedKnowledge/Thompson Roofing Solutions-Pricing.pdf"
+                },
+                {
+                    "file": "EmbeddedKnowledge/Wilson General Contractors-Pricing.pdf"
+                }
+            ]
+        }
+    ],
+    "actions": [
+        {
+            "id": "action_1",
+            "file": "ai-plugin.json"
+        }
+    ]
+}

@@ -1,0 +1,13 @@
+{
+  "name": "fieldops-mcp",
+  "version": "1.0.0",
+  "description": "Field Service Dispatch MCP Server with Interactive Widgets (MCP Apps)",
+  "private": true,
+  "scripts": {
+    "install:all": "npm install && cd server && npm install && cd ../widgets && npm install",
+    "build:widgets": "cd widgets && npm run build",
+    "start:server": "cd server && npm start",
+    "dev:server": "cd server && npm run dev",
+    "inspector": "npx @modelcontextprotocol/inspector"
+  }
+}

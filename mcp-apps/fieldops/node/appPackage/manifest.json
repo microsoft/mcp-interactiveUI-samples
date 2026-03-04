@@ -1,0 +1,39 @@
+{
+    "$schema": "https://developer.microsoft.com/en-us/json-schemas/teams/v1.24/MicrosoftTeams.schema.json",
+    "manifestVersion": "1.24",
+    "version": "1.0.0",
+    "id": "9ee70705-9cac-4945-89c3-8d9d01200d9c",
+    "developer": {
+        "name": "sample app",
+        "websiteUrl": "https://www.example.com",
+        "privacyUrl": "https://www.example.com/privacy",
+        "termsOfUseUrl": "https://www.example.com/termofuse"
+    },
+    "name": {
+        "short": "FieldOps Assist",
+        "full": "FieldOps Assist"
+    },
+    "description": {
+        "short": "An efficient, operations-savvy dispatch copilot.",
+        "full": "An efficient, operations-savvy dispatch copilot that helps coordinate technicians and assignments with clarity and confidence."
+    },
+    "icons": {
+        "outline": "outline.png",
+        "color": "color.png"
+    },
+    "accentColor": "#FFFFFF",
+    "composeExtensions": [],
+    "permissions": [
+        "identity",
+        "messageTeamMembers"
+    ],
+    "validDomains": [],
+    "copilotAgents": {
+        "declarativeAgents": [
+            {
+                "id": "declarativeAgent",
+                "file": "declarativeAgent.json"
+            }
+        ]
+    }
+}

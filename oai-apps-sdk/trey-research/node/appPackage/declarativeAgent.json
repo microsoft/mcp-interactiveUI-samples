@@ -1,0 +1,34 @@
+{
+    "version": "v1.6",
+    "name": "trey-mcp-agent${{APP_NAME_SUFFIX}}",
+    "description": "Declarative agent created with Microsoft 365 Agents Toolkit can assist user in calling MCP Servers",
+    "instructions": "$[file('instruction.txt')]",
+    "conversation_starters": [
+        {
+			"title": "Show the HR dashboard",
+			"text": "Show the HR dashboard"
+		},
+        {
+			"title": "Find and assign a React developer",
+			"text": "I need a React developer for the Copilot project at Consolidated Messenger. Find someone with React skills, show me their profile, and assign them as a Developer."
+		},
+        {
+			"title": "Dashboard with billable filter",
+			"text": "Show me the HR dashboard filtered to only billable assignments. Which consultants have the most forecasted hours, and are any of them over-allocated?"
+		},
+        {
+			"title": "Staff the Disaster Recovery project",
+			"text": "We need to staff the Disaster Recovery project at Relecloud. Show me the project details, then find all consultants who have Python or Java skills and bulk-assign them as Developers at $120/hr."
+		},
+        {
+			"title": "Compare two consultants",
+			"text": "Compare Avery Howard and Sanjay Puranik — show me both their profiles side by side. Who has more certifications, and which projects are they currently assigned to?"
+		}
+    ],
+    "actions": [
+        {
+            "id": "action_1",
+            "file": "ai-plugin.json"
+        }
+    ]
+}

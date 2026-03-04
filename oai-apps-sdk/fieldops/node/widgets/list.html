@@ -1,0 +1,406 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Assignments List</title>
+    <style>
+      *, *::before, *::after { box-sizing: border-box; }
+      body {
+        font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Helvetica, Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        color: #242424;
+        background: transparent;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        font-size: 15px;
+        line-height: 1.45;
+      }
+
+      /* ---- card shell ---- */
+      .card {
+        border: 1px solid #e0e0e0;
+        border-radius: 12px;
+        overflow: hidden;
+        background: #fff;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+      }
+
+      /* ---- header ---- */
+      .header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 14px 16px;
+        border-bottom: 1px solid #edebe9;
+        background: transparent;
+      }
+      .header-left {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+      .header-icon {
+        width: 36px;
+        height: 36px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 8px;
+        background: #0f6cbd;
+        flex-shrink: 0;
+      }
+      .header-icon svg { color: #fff; display: block; }
+      .header-title {
+        font-size: 17px;
+        font-weight: 600;
+        color: #242424;
+        line-height: 1.3;
+      }
+      .header-subtitle {
+        font-size: 13px;
+        color: #707070;
+        line-height: 1.3;
+        margin-top: 1px;
+      }
+      .header-right {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+
+      /* ---- buttons ---- */
+      select {
+        font-family: inherit;
+        font-size: 14px;
+        padding: 6px 10px;
+        border: 1px solid #d1d1d1;
+        border-radius: 6px;
+        background: #fff;
+        color: #242424;
+        outline: none;
+        cursor: pointer;
+        transition: border-color 0.1s;
+        min-height: 32px;
+      }
+      select:hover { border-color: #b3b3b3; }
+      select:focus { border-color: #0f6cbd; }
+      .btn {
+        font-family: inherit;
+        font-size: 14px;
+        font-weight: 600;
+        padding: 6px 14px;
+        border-radius: 6px;
+        border: none;
+        cursor: pointer;
+        transition: all 0.1s;
+        white-space: nowrap;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        min-height: 32px;
+      }
+      .btn-primary {
+        background: #0f6cbd;
+        color: #fff;
+      }
+      .btn-primary:hover { background: #115ea3; }
+      .btn-primary:active { background: #0e4f8b; }
+      .btn-subtle {
+        background: transparent;
+        color: #707070;
+        padding: 6px 8px;
+        border-radius: 6px;
+      }
+      .btn-subtle:hover { background: #f5f5f5; color: #424242; }
+      .btn-subtle svg { display: block; }
+
+      /* ---- column headers ---- */
+      .col-headers {
+        display: grid;
+        grid-template-columns: 1.6fr 82px 110px 2.5fr 1.8fr;
+        gap: 8px;
+        align-items: center;
+        padding: 10px 16px;
+        background: #fafafa;
+        border-bottom: 1px solid #edebe9;
+        font-size: 13px;
+        font-weight: 600;
+        color: #616161;
+        min-height: 40px;
+      }
+
+      /* ---- rows ---- */
+      .rows { display: flex; flex-direction: column; }
+      .row {
+        display: grid;
+        grid-template-columns: 1.6fr 82px 110px 2.5fr 1.8fr;
+        gap: 8px;
+        align-items: start;
+        padding: 12px 16px;
+        min-height: 48px;
+        border-bottom: 1px solid #f0f0f0;
+        transition: background 0.1s;
+        cursor: default;
+      }
+      .row:last-child { border-bottom: none; }
+      .row:hover { background: #f5f5f5; }
+
+      /* site cell */
+      .cell-site {
+        font-weight: 600;
+        color: #242424;
+        font-size: 14px;
+      }
+      .cell-id {
+        font-size: 13px;
+        color: #707070;
+        margin-top: 2px;
+      }
+      .cell-category {
+        display: inline-block;
+        font-size: 10px;
+        font-weight: 600;
+        color: #0f6cbd;
+        background: #eff6fc;
+        border-radius: 3px;
+        padding: 1px 5px;
+        letter-spacing: 0.03em;
+        text-transform: uppercase;
+        white-space: nowrap;
+        margin-top: 4px;
+      }
+
+      /* priority pill */
+      .pill {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 13px;
+        font-weight: 600;
+        padding: 3px 10px;
+        border-radius: 999px;
+        white-space: nowrap;
+      }
+      .pill-high {
+        background: #fdf3f4;
+        color: #c4314b;
+      }
+      .pill-medium {
+        background: #fff9f0;
+        color: #c37d04;
+      }
+      .pill-low {
+        background: #f1faf1;
+        color: #0e7a0d;
+      }
+
+      /* sla */
+      .cell-sla {
+        font-size: 14px;
+        color: #242424;
+        font-variant-numeric: tabular-nums;
+        white-space: nowrap;
+      }
+
+      /* description */
+      .cell-desc {
+        color: #424242;
+        font-size: 14px;
+        line-height: 1.4;
+      }
+
+      /* location */
+      .cell-location {
+        color: #616161;
+        font-size: 14px;
+        line-height: 1.4;
+      }
+
+      /* empty state */
+      .empty-state {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 48px 16px;
+        gap: 8px;
+      }
+      .empty-state svg { color: #b3b3b3; }
+      .empty-state p {
+        color: #707070;
+        font-size: 15px;
+        margin: 0;
+      }
+
+      /* fullscreen hiding */
+      body.is-fullscreen .btn-subtle.expand-btn { display: none !important; }
+    </style>
+  </head>
+  <body>
+    <div class="card">
+      <!-- Header -->
+      <div class="header">
+        <div class="header-left">
+          <div class="header-icon">
+            <svg width="18" height="18" viewBox="0 0 20 20" fill="currentColor"><path d="M6 2a2 2 0 00-2 2v12a2 2 0 002 2h8a2 2 0 002-2V4a2 2 0 00-2-2H6zm1 3h6a.5.5 0 010 1H7a.5.5 0 010-1zm0 3h6a.5.5 0 010 1H7a.5.5 0 010-1zm0 3h4a.5.5 0 010 1H7a.5.5 0 010-1z"/></svg>
+          </div>
+          <div>
+            <div class="header-title">New Assignments</div>
+            <div class="header-subtitle" id="subtitle">Loading…</div>
+          </div>
+        </div>
+        <div class="header-right">
+          <select id="priorityFilter" aria-label="Filter by priority">
+            <option value="">All priorities</option>
+            <option value="High">High</option>
+            <option value="Medium">Medium</option>
+            <option value="Low">Low</option>
+          </select>
+          <button class="btn btn-primary" id="viewMapBtn">
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="1 6 1 15 5.5 12 10.5 15 15 12 15 3 10.5 6 5.5 3"/></svg>
+            View on map
+          </button>
+          <button class="btn btn-subtle expand-btn" id="fullscreenBtn" style="display:none;" title="Expand to fullscreen">
+            <svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="7 2 2 2 2 7"/><polyline points="13 2 18 2 18 7"/><polyline points="7 18 2 18 2 13"/><polyline points="13 18 18 18 18 13"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Column headers -->
+      <div class="col-headers">
+        <div>Site</div>
+        <div>Priority</div>
+        <div>SLA Due</div>
+        <div>Description</div>
+        <div>Location</div>
+      </div>
+
+      <!-- Rows -->
+      <div class="rows" id="rows"></div>
+    </div>
+
+    <script>
+      let assignments = [];
+      let visibleAssignments = [];
+      const MAP_TEMPLATE_URI = "ui://widget/dispatch-map.html";
+
+      /* Format: "12 Feb 9:30 AM" */
+      function fmtSla(iso) {
+        const d = new Date(iso);
+        const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+        const day = d.getDate();
+        const mon = months[d.getMonth()];
+        let h = d.getHours();
+        const m = String(d.getMinutes()).padStart(2, "0");
+        const ap = h >= 12 ? "PM" : "AM";
+        h = h % 12 || 12;
+        return `${day} ${mon} ${h}:${m} ${ap}`;
+      }
+
+      function pillClass(p) {
+        return p === "High" ? "pill pill-high" : p === "Medium" ? "pill pill-medium" : "pill pill-low";
+      }
+
+      function render() {
+        const filter = document.getElementById("priorityFilter").value;
+        const data = filter ? assignments.filter(a => a.priority === filter) : assignments;
+        visibleAssignments = data;
+        const container = document.getElementById("rows");
+        container.innerHTML = "";
+
+        const total = assignments.length;
+        const shown = data.length;
+        document.getElementById("subtitle").textContent =
+          shown === total ? `${total} assignment${total !== 1 ? "s" : ""}` : `${shown} of ${total} assignments`;
+
+        if (data.length === 0) {
+          container.innerHTML = `
+            <div class="empty-state">
+              <svg width="40" height="40" viewBox="0 0 20 20" fill="currentColor"><path d="M10 2a8 8 0 100 16 8 8 0 000-16zm-.75 4.5a.75.75 0 011.5 0v4a.75.75 0 01-1.5 0v-4zm.75 7.5a.75.75 0 110-1.5.75.75 0 010 1.5z"/></svg>
+              <p>No assignments match the current filter</p>
+            </div>`;
+          return;
+        }
+
+        for (const item of data) {
+          const row = document.createElement("div");
+          row.className = "row";
+          row.innerHTML = `
+            <div>
+              <div class="cell-site">${item.site}</div>
+              <div class="cell-id">${item.id}</div>
+            </div>
+            <div><span class="${pillClass(item.priority)}">${item.priority}</span></div>
+            <div class="cell-sla">${fmtSla(item.slaDue)}</div>
+            <div>
+              <div class="cell-desc">${item.description || "\u2014"}</div>
+              <div class="cell-category">${item.category}</div>
+            </div>
+            <div class="cell-location">${item.address}</div>
+          `;
+          container.appendChild(row);
+        }
+      }
+
+      function loadData(toolOutput) {
+        assignments = toolOutput?.assignments ?? [];
+        render();
+      }
+
+      document.getElementById("priorityFilter").addEventListener("change", render);
+
+      /* Expand */
+      document.getElementById("fullscreenBtn").addEventListener("click", async () => {
+        if (typeof window.openai?.requestDisplayMode === "function") {
+          await window.openai.requestDisplayMode({ mode: "fullscreen" });
+        }
+      });
+
+      /* Display mode */
+      function applyDisplayMode() {
+        const isFs = window.openai?.displayMode === "fullscreen";
+        document.body.classList.toggle("is-fullscreen", isFs);
+        if (!isFs && typeof window.openai?.requestDisplayMode === "function") {
+          document.getElementById("fullscreenBtn").style.display = "inline-flex";
+        } else {
+          document.getElementById("fullscreenBtn").style.display = "none";
+        }
+      }
+
+      /* View on map */
+      document.getElementById("viewMapBtn").addEventListener("click", async () => {
+        const ids = visibleAssignments
+          .map((assignment) => assignment.id)
+          .filter((id) => typeof id === "string" && id.length > 0);
+
+        if (typeof window.openai?.sendFollowUpMessage === "function") {
+          const idPhrase = ids.length > 0
+            ? `Use assignment IDs: ${ids.join(", ")}.`
+            : "Use all currently listed assignments.";
+          const prompt = `Show assignments on the map`;
+
+          try {
+            await window.openai.sendFollowUpMessage({
+              prompt,
+              scrollToBottom: true,
+            });
+          } catch (error) {
+            console.error("sendFollowUpMessage failed", error);
+          }
+        }
+      });
+
+      /* Bootstrap */
+      applyDisplayMode();
+      loadData(window.openai?.toolOutput);
+
+      window.addEventListener("openai:set_globals", (event) => {
+        const output = event.detail?.globals?.toolOutput;
+        if (output) loadData(output);
+        applyDisplayMode();
+      }, { passive: true });
+    </script>
+  </body>
+</html>

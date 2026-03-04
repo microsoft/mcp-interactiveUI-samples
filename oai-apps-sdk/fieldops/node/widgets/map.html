@@ -1,0 +1,541 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Assignments Map</title>
+    <link rel="stylesheet" href="https://api.mapbox.com/mapbox-gl-js/v3.12.0/mapbox-gl.css" />
+    <script src="https://api.mapbox.com/mapbox-gl-js/v3.12.0/mapbox-gl.js"></script>
+    <style>
+      *, *::before, *::after { box-sizing: border-box; }
+      html, body { height: 100%; margin: 0; }
+      body {
+        font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Helvetica, Arial, sans-serif;
+        padding: 0;
+        color: #242424;
+        background: transparent;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        font-size: 15px;
+        line-height: 1.45;
+        overflow: hidden;
+      }
+      .card {
+        border: none;
+        border-radius: 0;
+        overflow: hidden;
+        background: transparent;
+        height: auto;
+        display: flex;
+        flex-direction: column;
+        box-shadow: none;
+      }
+      .btn {
+        font-family: inherit;
+        font-size: 14px;
+        font-weight: 600;
+        padding: 6px 14px;
+        border-radius: 6px;
+        border: none;
+        cursor: pointer;
+        transition: all 0.1s;
+        white-space: nowrap;
+        min-height: 32px;
+      }
+      .btn-outline {
+        background: #fff;
+        border: 1px solid #d1d1d1;
+        color: #242424;
+      }
+      .btn-outline:hover { background: #f5f5f5; border-color: #b3b3b3; }
+      .layout {
+        display: block;
+        position: relative;
+        margin: 0;
+        height: auto;
+        border-radius: 12px;
+        overflow: hidden;
+      }
+      #map {
+        width: 100%;
+        height: auto;
+        aspect-ratio: 4 / 3;
+        border: none;
+        border-radius: 12px;
+        overflow: hidden;
+      }
+      body.is-fullscreen .card {
+        height: 100%;
+      }
+      body.is-fullscreen .layout {
+        height: 100%;
+        border-radius: 0;
+      }
+      body.is-fullscreen #map {
+        height: 100%;
+        aspect-ratio: auto;
+        border-radius: 0;
+      }
+      #fullscreenBtn {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        z-index: 6;
+        width: 32px;
+        height: 32px;
+        padding: 0;
+        border-radius: 999px;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        background: rgba(255,255,255,0.92);
+        border: 1px solid rgba(0,0,0,0.12);
+      }
+      .carousel-wrap {
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        margin: 0;
+        padding: 8px 8px 10px;
+        background: rgba(255,255,255,0.45);
+        backdrop-filter: blur(5px);
+        -webkit-backdrop-filter: blur(5px);
+        z-index: 5;
+      }
+      body.is-fullscreen .carousel-wrap {
+        top: 0;
+        bottom: auto;
+      }
+      .carousel-shell {
+        position: relative;
+      }
+      .carousel-viewport {
+        overflow: hidden;
+      }
+      .carousel {
+        display: flex;
+        gap: 12px;
+        overflow-x: auto;
+        padding: 2px 2px 6px;
+        scroll-snap-type: x proximity;
+        scrollbar-width: none;
+        overscroll-behavior-x: contain;
+        overscroll-behavior-y: contain;
+        touch-action: pan-x;
+      }
+      .carousel::-webkit-scrollbar {
+        display: none;
+      }
+      .carousel-fade {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        width: 10px;
+        pointer-events: none;
+        z-index: 2;
+        display: none;
+      }
+      .carousel-fade.left {
+        left: 0;
+        border-left: 1px solid rgba(0,0,0,0.12);
+        background: linear-gradient(to right, rgba(0,0,0,0.1), rgba(0,0,0,0));
+      }
+      .carousel-fade.right {
+        right: 0;
+        border-right: 1px solid rgba(0,0,0,0.12);
+        background: linear-gradient(to left, rgba(0,0,0,0.1), rgba(0,0,0,0));
+      }
+      .carousel-nav {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        z-index: 3;
+        width: 36px;
+        height: 36px;
+        border-radius: 999px;
+        border: 1px solid #d1d1d1;
+        background: rgba(255,255,255,0.95);
+        color: #242424;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        box-shadow: 0 1px 4px rgba(0,0,0,0.12);
+      }
+      .carousel-nav:hover {
+        background: #f5f5f5;
+      }
+      .carousel-nav-arrow {
+        width: 20px;
+        height: 20px;
+        display: block;
+        pointer-events: none;
+      }
+      .carousel-nav:disabled {
+        opacity: 0.35;
+        cursor: default;
+      }
+      .carousel-nav.prev { left: 6px; }
+      .carousel-nav.next { right: 6px; }
+      .carousel-card {
+        scroll-snap-align: start;
+        border: none;
+        border-radius: 0;
+        background: transparent;
+        cursor: pointer;
+        transition: transform 0.1s ease, opacity 0.1s ease;
+        min-width: 100px;
+        max-width: 110px;
+        display: flex;
+        flex-direction: column;
+        user-select: none;
+      }
+      .carousel-card:hover { transform: translateY(-1px); }
+      .carousel-card.active { opacity: 1; }
+      .carousel-card.skeleton {
+        cursor: default;
+      }
+      .carousel-img {
+        width: 100%;
+        aspect-ratio: 1 / 1;
+        object-fit: cover;
+        background: #f5f5f5;
+        border-radius: 10px;
+        border: 1px solid rgba(0,0,0,0.06);
+        box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+      }
+      .carousel-body {
+        margin-top: 8px;
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+      }
+      .tile-site {
+        font-size: 14px;
+        font-weight: 600;
+        color: #242424;
+        line-height: 1.3;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .tile-meta {
+        margin-top: 4px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        flex-wrap: wrap;
+      }
+      .category-tag {
+        display: inline-block;
+        font-size: 10px;
+        font-weight: 600;
+        color: #0f6cbd;
+        background: #eff6fc;
+        border-radius: 3px;
+        padding: 1px 5px;
+        text-transform: uppercase;
+        letter-spacing: 0.03em;
+      }
+      .due-date {
+        font-size: 13px;
+        color: #616161;
+        line-height: 1.3;
+      }
+      .skeleton-box {
+        border-radius: 8px;
+        background: linear-gradient(90deg, rgba(255,255,255,0.15) 25%, rgba(255,255,255,0.35) 40%, rgba(255,255,255,0.15) 60%);
+        background-size: 200% 100%;
+        animation: shimmer 1.2s ease-in-out infinite;
+      }
+      .skeleton-img {
+        width: 100%;
+        aspect-ratio: 1 / 1;
+      }
+      .skeleton-line {
+        height: 11px;
+        margin-top: 8px;
+      }
+      .skeleton-line.short {
+        width: 70%;
+      }
+      @keyframes shimmer {
+        0% { background-position: 200% 0; }
+        100% { background-position: -200% 0; }
+      }
+      .assignment-marker {
+        width: 22px;
+        height: 22px;
+        border-radius: 50% 50% 50% 0;
+        transform: rotate(-45deg);
+        border: 2px solid #fff;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.28);
+        cursor: pointer;
+      }
+      .assignment-marker::after {
+        content: "";
+        position: absolute;
+        width: 8px;
+        height: 8px;
+        background: #fff;
+        border-radius: 50%;
+        top: 6px;
+        left: 6px;
+      }
+      .pin-high { background: #d13438; }
+      .pin-medium { background: #ff8c00; }
+      .pin-low { background: #107c10; }
+      .mapboxgl-popup {
+        z-index: 8;
+      }
+      @media (max-width: 900px) { .layout { grid-template-columns: 1fr; } }
+    </style>
+  </head>
+  <body>
+    <div class="card">
+      <div class="layout">
+        <div id="map"></div>
+        <button class="btn btn-outline" id="fullscreenBtn" aria-label="Expand map">⛶</button>
+        <div class="carousel-wrap">
+          <div class="carousel-shell">
+            <button id="carouselPrev" class="carousel-nav prev" type="button" aria-label="Previous assignments">
+              <svg class="carousel-nav-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <polyline points="15 5 8 12 15 19"></polyline>
+              </svg>
+            </button>
+            <div class="carousel-viewport">
+              <div id="carousel" class="carousel"></div>
+            </div>
+            <button id="carouselNext" class="carousel-nav next" type="button" aria-label="Next assignments">
+              <svg class="carousel-nav-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <polyline points="9 5 16 12 9 19"></polyline>
+              </svg>
+            </button>
+            <div class="carousel-fade left" aria-hidden="true"></div>
+            <div class="carousel-fade right" aria-hidden="true"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      mapboxgl.accessToken = "YOUR_MAPBOX_ACCESS_TOKEN";
+
+      let map;
+      let markers = [];
+      let markerById = new Map();
+      let activeId = "";
+      let assignments = [];
+      let carouselLoaded = false;
+      let mapReady = false;
+      let navControl;
+      let navPosition = "";
+
+      function initMap() {
+        if (map) return;
+        map = new mapboxgl.Map({
+          container: "map",
+          style: "mapbox://styles/mapbox/streets-v12",
+          center: [78.3915, 17.4483],
+          zoom: 10,
+          attributionControl: false
+        });
+        navControl = new mapboxgl.NavigationControl();
+        navPosition = "top-left";
+        map.addControl(navControl, navPosition);
+        map.on("load", () => {
+          mapReady = true;
+          renderMap();
+          applyDisplayMode();
+        });
+        window.addEventListener("resize", () => map.resize());
+      }
+
+      function applyDisplayMode() {
+        const isFs = window.openai?.displayMode === "fullscreen";
+        document.body.classList.toggle("is-fullscreen", isFs);
+
+        if (typeof window.openai?.requestDisplayMode === "function" && !isFs) {
+          document.getElementById("fullscreenBtn").style.display = "inline-flex";
+        } else {
+          document.getElementById("fullscreenBtn").style.display = "none";
+        }
+
+        if (map && navControl) {
+          const desired = isFs ? "bottom-right" : "top-left";
+          if (desired !== navPosition) {
+            map.removeControl(navControl);
+            map.addControl(navControl, desired);
+            navPosition = desired;
+          }
+        }
+      }
+
+      function fmtDue(iso) {
+        const due = new Date(iso);
+        return due.toLocaleString(undefined, {
+          month: "short",
+          day: "numeric",
+          hour: "numeric",
+          minute: "2-digit"
+        });
+      }
+
+      function focusAssignment(id) {
+        const item = assignments.find((a) => a.id === id);
+        if (!item || !map) return;
+        map.flyTo({ center: [item.lng, item.lat], zoom: 14 });
+        const ref = markerById.get(id);
+        if (ref?.popup) ref.popup.addTo(map);
+        activeId = item.id;
+        renderCarousel();
+      }
+
+      function updateCarouselNav() {
+        const carousel = document.getElementById("carousel");
+        const prevBtn = document.getElementById("carouselPrev");
+        const nextBtn = document.getElementById("carouselNext");
+        if (!carousel || !prevBtn || !nextBtn) return;
+
+        const maxScrollLeft = carousel.scrollWidth - carousel.clientWidth;
+        prevBtn.disabled = carousel.scrollLeft <= 2;
+        nextBtn.disabled = carousel.scrollLeft >= maxScrollLeft - 2;
+      }
+
+      function scrollCarousel(direction) {
+        const carousel = document.getElementById("carousel");
+        if (!carousel) return;
+        const card = carousel.querySelector(".carousel-card");
+        const cardWidth = card ? card.getBoundingClientRect().width + 12 : 120;
+        carousel.scrollBy({ left: direction * cardWidth, behavior: "smooth" });
+      }
+
+      function isolateCarouselInteractions() {
+        const carousel = document.getElementById("carousel");
+        if (!carousel) return;
+
+        ["wheel", "touchstart", "touchmove", "pointerdown", "mousedown"].forEach((eventName) => {
+          carousel.addEventListener(eventName, (event) => {
+            event.stopPropagation();
+          }, { passive: true });
+        });
+      }
+
+      function renderCarousel() {
+        const container = document.getElementById("carousel");
+
+        if (!carouselLoaded) {
+          container.innerHTML = Array.from({ length: 7 })
+            .map(() => `
+            <div class="carousel-card skeleton" aria-hidden="true">
+              <div class="skeleton-box skeleton-img"></div>
+              <div class="carousel-body">
+                <div class="skeleton-box skeleton-line"></div>
+                <div class="skeleton-box skeleton-line short"></div>
+              </div>
+            </div>
+          `)
+            .join("");
+          const prevBtn = document.getElementById("carouselPrev");
+          const nextBtn = document.getElementById("carouselNext");
+          if (prevBtn) prevBtn.disabled = true;
+          if (nextBtn) nextBtn.disabled = true;
+          return;
+        }
+
+        container.innerHTML = assignments
+          .map(
+            (item) => `
+            <div class="carousel-card ${activeId === item.id ? "active" : ""}" data-id="${item.id}">
+              <img class="carousel-img" src="${item.siteImageUrl ?? ""}" alt="${item.site}" />
+              <div class="carousel-body">
+                <div class="tile-site">${item.site}</div>
+                <div class="tile-meta">
+                  <span class="category-tag">${item.category ?? "General"}</span>
+                  <span class="due-date">${fmtDue(item.slaDue)}</span>
+                </div>
+              </div>
+            </div>
+          `
+          )
+          .join("");
+
+        container.querySelectorAll(".carousel-card").forEach((card) => {
+          card.addEventListener("click", () => {
+            const id = card.getAttribute("data-id");
+            if (id) focusAssignment(id);
+          });
+        });
+
+        updateCarouselNav();
+      }
+
+      function renderMap() {
+        initMap();
+        markers.forEach((m) => m.remove());
+        markers = [];
+        markerById.clear();
+
+        if (!mapReady || assignments.length === 0) return;
+
+        const bounds = new mapboxgl.LngLatBounds();
+        for (const item of assignments) {
+          const el = document.createElement("div");
+          const cls = item.priority === "High" ? "pin-high" : item.priority === "Medium" ? "pin-medium" : "pin-low";
+          el.className = `assignment-marker ${cls}`;
+
+          const popup = new mapboxgl.Popup({ offset: 22 }).setHTML(
+            `<strong>${item.site}</strong><br/>${item.priority} · SLA ${new Date(item.slaDue).toLocaleTimeString()}<br/>${item.requiredSkills.join(", ")}`
+          );
+
+          const marker = new mapboxgl.Marker({ element: el })
+            .setLngLat([item.lng, item.lat])
+            .setPopup(popup)
+            .addTo(map);
+
+          marker.getElement().addEventListener("mouseenter", () => popup.addTo(map));
+          marker.getElement().addEventListener("mouseleave", () => popup.remove());
+          marker.getElement().addEventListener("click", () => {
+            activeId = item.id;
+            renderCarousel();
+          });
+          markers.push(marker);
+          markerById.set(item.id, { marker, popup });
+          bounds.extend([item.lng, item.lat]);
+        }
+
+        map.fitBounds(bounds, { padding: 40, animate: true });
+      }
+
+      function loadData(toolOutput) {
+        carouselLoaded = true;
+        assignments = toolOutput?.assignments ?? [];
+        if (assignments.length > 0 && !activeId) activeId = assignments[0].id;
+        renderCarousel();
+        renderMap();
+      }
+
+      document.getElementById("carouselPrev").addEventListener("click", () => scrollCarousel(-1));
+      document.getElementById("carouselNext").addEventListener("click", () => scrollCarousel(1));
+      document.getElementById("carousel").addEventListener("scroll", updateCarouselNav, { passive: true });
+      window.addEventListener("resize", updateCarouselNav, { passive: true });
+
+      document.getElementById("fullscreenBtn").addEventListener("click", async () => {
+        if (typeof window.openai?.requestDisplayMode === "function") {
+          await window.openai.requestDisplayMode({ mode: "fullscreen" });
+        }
+      });
+
+      applyDisplayMode();
+      renderCarousel();
+      isolateCarouselInteractions();
+      requestAnimationFrame(() => loadData(window.openai?.toolOutput));
+      window.addEventListener("openai:set_globals", (event) => {
+        const output = event.detail?.globals?.toolOutput;
+        if (output) loadData(output);
+        applyDisplayMode();
+      }, { passive: true });
+    </script>
+  </body>
+</html>

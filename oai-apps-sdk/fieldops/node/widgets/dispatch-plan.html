@@ -1,0 +1,789 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Dispatch Plan</title>
+    <link rel="stylesheet" href="https://api.mapbox.com/mapbox-gl-js/v3.12.0/mapbox-gl.css" />
+    <script src="https://api.mapbox.com/mapbox-gl-js/v3.12.0/mapbox-gl.js"></script>
+    <style>
+      *, *::before, *::after { box-sizing: border-box; }
+      html, body { height: 100%; margin: 0; overflow: hidden; }
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+        padding: 0;
+        color: #1f1f1f;
+        background: transparent;
+        font-size: 14px;
+        line-height: 1.45;
+      }
+      .card {
+        border: none;
+        border-radius: 0;
+        overflow: hidden;
+        background: transparent;
+        height: auto;
+        display: flex;
+        flex-direction: column;
+        padding: 0;
+      }
+      .btn {
+        font-family: inherit;
+        font-size: 14px;
+        font-weight: 500;
+        padding: 6px 14px;
+        border-radius: 8px;
+        border: none;
+        cursor: pointer;
+        transition: background 0.15s;
+        white-space: nowrap;
+      }
+      .btn-outline {
+        background: transparent;
+        border: 1px solid rgba(0,0,0,0.15);
+        color: #1f1f1f;
+      }
+      .btn-outline:hover { background: rgba(0,0,0,0.04); }
+      .btn-primary {
+        background: #1f1f1f;
+        color: #fff;
+      }
+      .btn-primary:hover { background: #333; }
+      #fullscreenBtn {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        z-index: 7;
+        width: 32px;
+        height: 32px;
+        padding: 0;
+        border-radius: 999px;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        background: rgba(255,255,255,0.92);
+        border: 1px solid rgba(0,0,0,0.12);
+      }
+      select {
+        font-family: inherit;
+        font-size: 13px;
+        padding: 4px 8px;
+        border: 1px solid rgba(0,0,0,0.15);
+        border-radius: 6px;
+        background: #fff;
+        color: #1f1f1f;
+        outline: none;
+        cursor: pointer;
+        width: 100%;
+        margin-top: 4px;
+      }
+      select:focus { border-color: rgba(0,0,0,0.3); }
+      .layout {
+        display: block;
+        position: relative;
+        margin: 0;
+        height: auto;
+        border-radius: 12px;
+        overflow: hidden;
+      }
+      #map {
+        width: 100%;
+        height: auto;
+        aspect-ratio: 4 / 3;
+        border: none;
+        border-radius: 12px;
+        overflow: hidden;
+      }
+      body.fullscreen-mode .card {
+        height: 100%;
+      }
+      body.fullscreen-mode .layout {
+        height: 100%;
+        border-radius: 0;
+      }
+      body.fullscreen-mode #map {
+        height: 100%;
+        aspect-ratio: auto;
+        border-radius: 0;
+      }
+      .plan-panel {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        bottom: 10px;
+        width: min(40%, 420px);
+        border: 1px solid rgba(0,0,0,0.14);
+        border-radius: 12px;
+        padding: 10px;
+        overflow: hidden;
+        background: rgba(255,255,255,0.92);
+        backdrop-filter: blur(6px);
+        -webkit-backdrop-filter: blur(6px);
+        z-index: 5;
+        display: flex;
+        flex-direction: column;
+      }
+      body.inline-mode .plan-panel {
+        top: 54px;
+      }
+      .plan-panel-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+        margin-bottom: 8px;
+      }
+      .plan-items {
+        flex: 1;
+        min-height: 0;
+        overflow-y: auto;
+        overscroll-behavior: contain;
+      }
+      .plan-title {
+        font-size: 13px;
+        font-weight: 600;
+        color: rgba(0,0,0,0.62);
+      }
+      .status-message {
+        margin: 0 0 8px;
+        font-size: 12px;
+        line-height: 1.3;
+        padding: 6px 8px;
+        border-radius: 8px;
+        display: none;
+      }
+      .status-message.success {
+        display: block;
+        background: #dff6dd;
+        color: #107c10;
+      }
+      .status-message.error {
+        display: block;
+        background: #fde7e9;
+        color: #a4262c;
+      }
+      .plan-row {
+        padding: 10px 8px;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: background 0.15s;
+      }
+      .plan-row:hover { background: rgba(0,0,0,0.03); }
+      .plan-row + .plan-row { border-top: 1px solid rgba(0,0,0,0.05); }
+      .plan-row.active { background: rgba(0,0,0,0.04); }
+      .muted { color: rgba(0,0,0,0.4); font-size: 13px; }
+      .avatar-row {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .avatar {
+        width: 22px;
+        height: 22px;
+        border-radius: 50%;
+        object-fit: cover;
+      }
+      .badge {
+        font-size: 12px;
+        border-radius: 999px;
+        padding: 2px 8px;
+        font-weight: 600;
+      }
+      .badge-high { background: #fde7e9; color: #d13438; }
+      .badge-medium { background: #fff4ce; color: #8a6100; }
+      .badge-low { background: #dff6dd; color: #107c10; }
+      .assignment-marker {
+        width: 22px;
+        height: 22px;
+        border-radius: 50% 50% 50% 0;
+        transform: rotate(-45deg);
+        background: #d13438;
+        border: 2px solid #fff;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.28);
+        cursor: pointer;
+      }
+      .assignment-marker::after {
+        content: "";
+        position: absolute;
+        width: 8px;
+        height: 8px;
+        background: #fff;
+        border-radius: 50%;
+        top: 6px;
+        left: 6px;
+      }
+      .tech-marker {
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        background: #0f6cbd;
+        border: 2px solid #fff;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.28);
+        cursor: pointer;
+        position: relative;
+      }
+      .tech-marker::before {
+        content: "";
+        position: absolute;
+        top: 4px;
+        left: 8px;
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: #fff;
+      }
+      .tech-marker::after {
+        content: "";
+        position: absolute;
+        left: 5px;
+        bottom: 4px;
+        width: 10px;
+        height: 7px;
+        border-radius: 7px 7px 3px 3px;
+        background: #fff;
+      }
+      .tech-photo-marker {
+        width: 34px;
+        height: 34px;
+        border-radius: 50%;
+        overflow: hidden;
+        border: 2px solid #fff;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.32);
+        background: #0f6cbd;
+        cursor: pointer;
+      }
+      .tech-photo-marker img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+      }
+      .tech-popup {
+        min-width: 220px;
+      }
+      .tech-popup-head {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 8px;
+      }
+      .tech-popup-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 1px solid rgba(0,0,0,0.12);
+        background: #f3f3f3;
+      }
+      .tech-popup-name {
+        font-size: 14px;
+        font-weight: 700;
+        color: #1f1f1f;
+        line-height: 1.2;
+      }
+      .tech-popup-id {
+        font-size: 12px;
+        color: rgba(0,0,0,0.55);
+        margin-top: 2px;
+      }
+      .tech-popup-meta {
+        font-size: 12px;
+        color: rgba(0,0,0,0.72);
+        line-height: 1.35;
+      }
+      @media (max-width: 900px) { .plan-panel { width: min(48%, 360px); } }
+    </style>
+  </head>
+  <body>
+    <div class="card">
+      <div class="layout">
+        <div id="map"></div>
+        <button class="btn btn-outline" id="fullscreenBtn" aria-label="Expand map">⛶</button>
+        <div class="plan-panel">
+          <div class="plan-panel-header">
+            <div class="plan-title">Assignment → Technician Mapping</div>
+            <button class="btn btn-primary" id="confirmBtn">Confirm Assignments</button>
+          </div>
+          <div id="statusMessage" class="status-message" role="status" aria-live="polite"></div>
+          <div id="routeDiagnostics" class="muted" style="margin: 0 0 8px; display: none;"></div>
+          <div class="plan-items" id="items"></div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      mapboxgl.accessToken = "YOUR_MAPBOX_ACCESS_TOKEN";
+
+      let map;
+      let mapReady = false;
+      let assignmentMarkers = [];
+      let technicianMarkers = [];
+      let assignmentMarkerById = new Map();
+      let technicianMarkerById = new Map();
+      let planItems = [];
+      let technicians = [];
+      let technicianOptions = [];
+      let activeAssignmentId = "";
+      let activeTechnicianId = "";
+      let lastBoundsSignature = "";
+      const confirmBtn = document.getElementById("confirmBtn");
+      const statusMessage = document.getElementById("statusMessage");
+      const routeDiagnostics = document.getElementById("routeDiagnostics");
+
+      function setStatusMessage(type, text) {
+        if (!statusMessage) return;
+        statusMessage.className = "status-message";
+        statusMessage.textContent = "";
+        if (!type || !text) return;
+        statusMessage.classList.add(type);
+        statusMessage.textContent = text;
+      }
+
+      function setRouteDiagnostics(text) {
+        if (!routeDiagnostics) return;
+        if (!text) {
+          routeDiagnostics.style.display = "none";
+          routeDiagnostics.textContent = "";
+          return;
+        }
+        routeDiagnostics.style.display = "block";
+        routeDiagnostics.textContent = text;
+      }
+
+      function initMap() {
+        if (map) return;
+        map = new mapboxgl.Map({
+          container: "map",
+          style: "mapbox://styles/mapbox/streets-v12",
+          center: [78.3915, 17.4483],
+          zoom: 10,
+          attributionControl: false
+        });
+        map.addControl(new mapboxgl.NavigationControl(), "top-left");
+        map.on("load", () => {
+          mapReady = true;
+          if (!map.getSource("dispatch-links")) {
+            map.addSource("dispatch-links", {
+              type: "geojson",
+              data: { type: "FeatureCollection", features: [] }
+            });
+            map.addLayer({
+              id: "dispatch-links-casing",
+              type: "line",
+              source: "dispatch-links",
+              paint: {
+                  "line-color": "rgba(255,255,255,0.95)",
+                  "line-width": ["case", ["get", "selected"], 11, 8],
+                  "line-opacity": 1
+              }
+            });
+            map.addLayer({
+              id: "dispatch-links-layer",
+              type: "line",
+              source: "dispatch-links",
+              paint: {
+                "line-color": ["case", ["get", "selected"], "#d83b01", ["get", "routeColor"]],
+                  "line-width": ["case", ["get", "selected"], 7, 5],
+                  "line-opacity": 1
+              }
+            });
+          }
+          drawMap(lastAssignments, lastTechs);
+        });
+        window.addEventListener("resize", () => map.resize());
+      }
+
+      function asMap(items, key) {
+        return new Map(items.map((i) => [i[key], i]));
+      }
+
+      function routeBendOffset(seed) {
+        let hash = 0;
+        for (let index = 0; index < seed.length; index += 1) {
+          hash = (hash * 31 + seed.charCodeAt(index)) | 0;
+        }
+        const normalized = ((hash % 1000) + 1000) % 1000;
+        return ((normalized / 999) - 0.5) * 0.01;
+      }
+
+      function buildRouteCoordinates(assignment, technician, assignmentId, technicianId) {
+        const startLng = assignment.location.lng;
+        const startLat = assignment.location.lat;
+        const endLng = technician.location.lng;
+        const endLat = technician.location.lat;
+
+        const dx = endLng - startLng;
+        const dy = endLat - startLat;
+        const length = Math.hypot(dx, dy);
+
+        if (length < 0.0001) {
+          return [
+            [startLng, startLat],
+            [endLng, endLat]
+          ];
+        }
+
+        const bend = routeBendOffset(`${assignmentId}|${technicianId}`);
+        const nx = -dy / length;
+        const ny = dx / length;
+        const midLng = (startLng + endLng) / 2 + nx * bend;
+        const midLat = (startLat + endLat) / 2 + ny * bend;
+
+        return [
+          [startLng, startLat],
+          [midLng, midLat],
+          [endLng, endLat]
+        ];
+      }
+
+      function clearMarkers() {
+        assignmentMarkers.forEach((m) => m.remove());
+        technicianMarkers.forEach((m) => m.remove());
+        assignmentMarkers = [];
+        technicianMarkers = [];
+        assignmentMarkerById.clear();
+        technicianMarkerById.clear();
+      }
+
+      function makeMarker(className, lng, lat, popupHtml) {
+        const el = document.createElement("div");
+        el.className = className;
+        const marker = new mapboxgl.Marker({
+          element: el,
+          anchor: "center",
+          pitchAlignment: "map",
+          rotationAlignment: "map"
+        }).setLngLat([lng, lat]);
+        if (popupHtml) {
+          marker.setPopup(new mapboxgl.Popup({ offset: 20 }).setHTML(popupHtml));
+        }
+        return marker;
+      }
+
+      function makeTechMarker(tech, popupHtml) {
+        const el = document.createElement("div");
+        el.className = "tech-photo-marker";
+        const img = document.createElement("img");
+        img.src = tech.profilePicUrl ?? "https://i.pravatar.cc/80?img=1";
+        img.alt = tech.name;
+        el.appendChild(img);
+
+        const marker = new mapboxgl.Marker({
+          element: el,
+          anchor: "center",
+          pitchAlignment: "map",
+          rotationAlignment: "map"
+        }).setLngLat([tech.location.lng, tech.location.lat]);
+        if (popupHtml) {
+          marker.setPopup(new mapboxgl.Popup({ offset: 20 }).setHTML(popupHtml));
+        }
+        return marker;
+      }
+
+      let lastAssignments = [];
+      let lastTechs = [];
+
+      function priorityBadgeClass(priority) {
+        if (priority === "High") return "badge badge-high";
+        if (priority === "Medium") return "badge badge-medium";
+        return "badge badge-low";
+      }
+
+      function techPopupHtml(tech) {
+        const skills = Array.isArray(tech.skills) ? tech.skills.slice(0, 3).join(", ") : "";
+        const ratingText = typeof tech.rating === "number" ? `⭐ ${tech.rating.toFixed(1)}` : "";
+        const vehicle = tech.vehicleType ?? "Technician";
+        const shift = tech.shift ? ` · ${tech.shift}` : "";
+        const address = tech.location?.address ? `<div class="tech-popup-meta">📍 ${tech.location.address}</div>` : "";
+        const skillsLine = skills ? `<div class="tech-popup-meta">🛠️ ${skills}</div>` : "";
+        const avatar = tech.profilePicUrl ?? "https://i.pravatar.cc/80?img=1";
+
+        return `
+          <div class="tech-popup">
+            <div class="tech-popup-head">
+              <img class="tech-popup-avatar" src="${avatar}" alt="${tech.name}" />
+              <div>
+                <div class="tech-popup-name">${tech.name}</div>
+                <div class="tech-popup-id">${tech.id}</div>
+              </div>
+            </div>
+            <div class="tech-popup-meta">${ratingText}${ratingText ? " · " : ""}${vehicle}${shift}</div>
+            ${skillsLine}
+            ${address}
+          </div>
+        `;
+      }
+
+      function focusAssignment(assignmentId) {
+        const a = lastAssignments.find((i) => i.id === assignmentId);
+        if (!a || !map) return;
+        activeAssignmentId = assignmentId;
+        const mapped = planItems.find((item) => item.assignmentId === assignmentId);
+        if (mapped?.technicianId) activeTechnicianId = mapped.technicianId;
+        const m = assignmentMarkerById.get(assignmentId);
+        if (m?.getPopup()) m.getPopup().addTo(map);
+        map.flyTo({ center: [a.location.lng, a.location.lat], zoom: 14 });
+        renderPlanRows(lastAssignments, lastTechs);
+        drawMap(lastAssignments, lastTechs);
+      }
+
+      function focusTechnician(technicianId) {
+        const t = lastTechs.find((i) => i.id === technicianId);
+        if (!t || !map) return;
+        activeTechnicianId = technicianId;
+        const m = technicianMarkerById.get(technicianId);
+        if (m?.getPopup()) m.getPopup().addTo(map);
+        map.flyTo({ center: [t.location.lng, t.location.lat], zoom: 14 });
+        renderPlanRows(lastAssignments, lastTechs);
+        drawMap(lastAssignments, lastTechs);
+      }
+
+      function focusPlanPair(assignmentId, technicianId) {
+        activeAssignmentId = assignmentId;
+        activeTechnicianId = technicianId;
+        const a = lastAssignments.find((i) => i.id === assignmentId);
+        if (a && map) map.flyTo({ center: [a.location.lng, a.location.lat], zoom: 13.5 });
+        renderPlanRows(lastAssignments, lastTechs);
+        drawMap(lastAssignments, lastTechs);
+      }
+
+      function drawMap(assignments, techs) {
+        lastAssignments = assignments;
+        lastTechs = techs;
+
+        initMap();
+        clearMarkers();
+
+        if (!mapReady) return;
+
+        const assignmentsById = asMap(assignments, "id");
+        const techById = asMap(techs, "id");
+        const plannedTechIds = new Set(planItems.map((item) => item.technicianId));
+        const boundsSignature = [
+          assignments.map((a) => a.id).sort().join("|"),
+          Array.from(plannedTechIds).sort().join("|")
+        ].join("::");
+        const bounds = new mapboxgl.LngLatBounds();
+        const lineFeatures = [];
+        const missingAssignments = [];
+        const missingTechnicians = [];
+
+        for (const a of assignments) {
+          const assignmentPopup = `<strong>${a.site}</strong><br/>${a.id} · ${a.priority}`;
+          const m = makeMarker(
+            "assignment-marker",
+            a.location.lng,
+            a.location.lat,
+            assignmentPopup
+          ).addTo(map);
+          m.getElement().addEventListener("mouseenter", () => m.getPopup()?.addTo(map));
+          m.getElement().addEventListener("mouseleave", () => m.getPopup()?.remove());
+          m.getElement().addEventListener("click", () => focusAssignment(a.id));
+          assignmentMarkers.push(m);
+          assignmentMarkerById.set(a.id, m);
+          bounds.extend([a.location.lng, a.location.lat]);
+        }
+
+        for (const t of techs) {
+          if (!plannedTechIds.has(t.id)) continue;
+          const techPopup = techPopupHtml(t);
+          const m = makeTechMarker(t, techPopup).addTo(map);
+          m.getElement().addEventListener("mouseenter", () => m.getPopup()?.addTo(map));
+          m.getElement().addEventListener("mouseleave", () => m.getPopup()?.remove());
+          m.getElement().addEventListener("click", () => focusTechnician(t.id));
+          technicianMarkers.push(m);
+          technicianMarkerById.set(t.id, m);
+          bounds.extend([t.location.lng, t.location.lat]);
+        }
+
+        const routePalette = ["#0f6cbd", "#107c10", "#6b4eff", "#0078d4", "#2d7d9a", "#8e562e", "#5c2d91", "#018574"];
+        for (const [index, row] of planItems.entries()) {
+          const a = assignmentsById.get(row.assignmentId);
+          const t = techById.get(row.technicianId);
+          if (!a) missingAssignments.push(row.assignmentId);
+          if (!t) missingTechnicians.push(row.technicianId);
+          if (!a || !t) continue;
+          lineFeatures.push({
+            type: "Feature",
+            properties: {
+              assignmentId: row.assignmentId,
+              technicianId: row.technicianId,
+              routeColor: routePalette[index % routePalette.length],
+              routeIndex: index,
+              selected:
+                row.assignmentId === activeAssignmentId &&
+                row.technicianId === activeTechnicianId
+            },
+            geometry: {
+              type: "LineString",
+              coordinates: [
+                [a.location.lng, a.location.lat],
+                [t.location.lng, t.location.lat]
+              ]
+            }
+          });
+        }
+
+        const src = map.getSource("dispatch-links");
+        if (src) src.setData({ type: "FeatureCollection", features: lineFeatures });
+
+        const missingA = Array.from(new Set(missingAssignments));
+        const missingT = Array.from(new Set(missingTechnicians));
+        if (missingA.length || missingT.length) {
+          const parts = [`Routes rendered ${lineFeatures.length}/${planItems.length}`];
+          if (missingA.length) parts.push(`missing assignments: ${missingA.join(", ")}`);
+          if (missingT.length) parts.push(`missing technicians: ${missingT.join(", ")}`);
+          setRouteDiagnostics(parts.join(" · "));
+        } else {
+          setRouteDiagnostics(`Routes rendered ${lineFeatures.length}/${planItems.length}`);
+        }
+
+        if (!bounds.isEmpty() && boundsSignature !== lastBoundsSignature) {
+          map.fitBounds(bounds, { padding: 40, animate: true });
+          lastBoundsSignature = boundsSignature;
+        }
+      }
+
+      async function onConfirm() {
+        if (!window.openai?.callTool) {
+          setStatusMessage("error", "Tool API unavailable in this widget runtime.");
+          return;
+        }
+        setStatusMessage(null, "");
+        if (confirmBtn) {
+          confirmBtn.disabled = true;
+          confirmBtn.textContent = "Confirming...";
+        }
+        try {
+          await window.openai.callTool("commit_assignments", {
+            assignments: planItems.map((item) => ({
+              assignmentId: item.assignmentId,
+              technicianId: item.technicianId,
+              etaMinutes: item.etaMinutes
+            }))
+          });
+          setStatusMessage("success", `Successfully committed ${planItems.length} assignment${planItems.length === 1 ? "" : "s"}.`);
+        } catch (error) {
+          const message = error instanceof Error ? error.message : "Failed to commit assignments.";
+          setStatusMessage("error", message);
+        } finally {
+          if (confirmBtn) {
+            confirmBtn.disabled = false;
+            confirmBtn.textContent = "Confirm Assignments";
+          }
+        }
+      }
+
+      function renderPlanRows(assignments, technicians) {
+        const optionSource = technicianOptions.length > 0
+          ? technicianOptions
+          : technicians.map((t) => ({ id: t.id, name: t.name }));
+
+        const optionsHtml = optionSource
+          .map((t) => `<option value="${t.id}">${t.name}</option>`)
+          .join("");
+
+        const container = document.getElementById("items");
+        container.innerHTML = planItems
+          .map(
+            (item) => {
+              const a = assignments.find((x) => x.id === item.assignmentId);
+              const tech = technicians.find((x) => x.id === item.technicianId);
+              const isActive =
+                activeAssignmentId &&
+                activeTechnicianId &&
+                item.assignmentId === activeAssignmentId &&
+                item.technicianId === activeTechnicianId;
+              const skillText = item.skillMatch === "Full" ? "Full skill match" : "Partial skill match";
+              const reasons = item.reason || `${skillText} · ${item.etaMinutes} min ETA · ${item.distanceKm} km`;
+              return `
+                <div class="plan-row ${isActive ? "active" : ""}" data-assignment="${item.assignmentId}" data-tech="${item.technicianId}">
+                  <div style="display:flex; justify-content:space-between; gap:8px; align-items:center;">
+                    <strong>${a?.site ?? item.assignmentId}</strong>
+                    <span class="${priorityBadgeClass(a?.priority)}">${a?.priority ?? "Low"}</span>
+                  </div>
+                  <div class="muted">Assigned to <strong>${tech?.name ?? item.technicianName ?? item.technicianId}</strong></div>
+                  <div class="muted">Why this assignment: ${reasons}</div>
+                  <div class="muted">Change technician</div>
+                  <select id="override-${item.assignmentId}" data-assignment="${item.assignmentId}">${optionsHtml}</select>
+                </div>
+              `;
+            }
+          )
+          .join("");
+
+        container.querySelectorAll(".plan-row").forEach((rowNode) => {
+          rowNode.addEventListener("click", () => {
+            const aId = rowNode.getAttribute("data-assignment");
+            const tId = rowNode.getAttribute("data-tech");
+            if (aId && tId) focusPlanPair(aId, tId);
+          });
+        });
+
+        for (const row of planItems) {
+          const sel = document.getElementById(`override-${row.assignmentId}`);
+          if (!sel) continue;
+          sel.value = row.technicianId;
+
+          ["pointerdown", "mousedown", "touchstart", "click", "keydown"].forEach((eventName) => {
+            sel.addEventListener(eventName, (event) => {
+              event.stopPropagation();
+            });
+          });
+
+          sel.addEventListener("change", () => {
+            row.technicianId = sel.value;
+            const selected = optionSource.find((t) => t.id === sel.value);
+            row.technicianName = selected?.name ?? row.technicianName;
+            const parentRow = sel.closest(".plan-row");
+            if (parentRow) parentRow.setAttribute("data-tech", row.technicianId);
+            focusPlanPair(row.assignmentId, row.technicianId);
+          });
+        }
+      }
+
+      function loadData(toolOutput) {
+        const data = toolOutput ?? {};
+        planItems = data.planItems ?? [];
+        technicians = data.technicians ?? [];
+        technicianOptions = data.technicianOptions ?? [];
+        const assignmentsData = data.assignments ?? [];
+
+        if (!activeAssignmentId && planItems.length > 0) activeAssignmentId = planItems[0].assignmentId;
+        if (!activeTechnicianId && planItems.length > 0) activeTechnicianId = planItems[0].technicianId;
+        if (!activeAssignmentId && assignmentsData.length > 0) activeAssignmentId = assignmentsData[0].id;
+        if (!activeTechnicianId && technicians.length > 0) activeTechnicianId = technicians[0].id;
+
+        renderPlanRows(assignmentsData, technicians);
+        drawMap(assignmentsData, technicians);
+      }
+
+      confirmBtn?.addEventListener("click", onConfirm);
+
+      document.getElementById("fullscreenBtn").addEventListener("click", async () => {
+        if (typeof window.openai?.requestDisplayMode === "function") {
+          await window.openai.requestDisplayMode({ mode: "fullscreen" });
+        }
+      });
+
+      function applyDisplayMode() {
+        const isFs = window.openai?.displayMode === "fullscreen";
+        document.body.classList.toggle("inline-mode", !isFs);
+        document.body.classList.toggle("fullscreen-mode", isFs);
+        if (!isFs && typeof window.openai?.requestDisplayMode === "function") {
+          document.getElementById("fullscreenBtn").style.display = "inline-flex";
+        } else {
+          document.getElementById("fullscreenBtn").style.display = "none";
+        }
+      }
+
+      applyDisplayMode();
+      loadData(window.openai?.toolOutput);
+      window.addEventListener("openai:set_globals", (event) => {
+        const output = event.detail?.globals?.toolOutput;
+        if (output) loadData(output);
+        applyDisplayMode();
+      }, { passive: true });
+    </script>
+  </body>
+</html>

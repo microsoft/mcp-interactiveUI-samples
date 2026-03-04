@@ -1,0 +1,54 @@
+{
+    "$schema": "https://developer.microsoft.com/json-schemas/copilot/plugin/v2.4/schema.json",
+    "schema_version": "v2.4",
+    "name_for_human": "tranining",
+    "description_for_human": "traniningdev",
+    "contact_email": "publisher-email@example.com",
+    "namespace": "tranining",
+    "functions": [
+        {
+            "name": "training-media",
+            "description": "Browse AI & Machine Learning courses with video previews. Shows a carousel of available courses the user can explore and enroll in."
+        }
+    ],
+    "runtimes": [
+        {
+            "type": "RemoteMCPServer",
+            "spec": {
+                "url": "<your-mcp-server-url>",
+                "x-mcp_tool_description": {
+                    "tools": [
+                        {
+                            "name": "training-media",
+                            "title": "Training Media",
+                            "description": "Browse AI & Machine Learning courses with video previews. Shows a carousel of available courses the user can explore and enroll in.",
+                            "inputSchema": {
+                                "type": "object",
+                                "properties": {},
+                                "$schema": "http://json-schema.org/draft-07/schema#"
+                            },
+                            "annotations": {
+                                "readOnlyHint": true
+                            },
+                            "execution": {
+                                "taskSupport": "forbidden"
+                            },
+                            "_meta": {
+                                "ui": {
+                                    "resourceUri": "ui://training-media/training-media.html"
+                                },
+                                "ui/resourceUri": "ui://training-media/training-media.html"
+                            }
+                        }
+                    ]
+                }
+            },
+            "run_for_functions": [
+                "training-media"
+            ],
+            "auth": {
+                "type": "None"
+            }
+        }
+    ]
+}
