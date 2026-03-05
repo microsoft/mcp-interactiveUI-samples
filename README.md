@@ -59,7 +59,8 @@ MCP server for insurance claims management with claims dashboard, claim detail w
 - [MCP Server using MCP Apps](mcp-apps/zava-insurance/node/src/mcpserver/README.md)
 - [MCP Server using OpenAI Apps SDK](oai-apps-sdk/zava-insurance/node/src/mcpserver/README.md)
 
-<a href="https://www.youtube.com/watch?v=kNXT7Syf9fQ" target="_blank"><img src="./oai-apps-sdk/zava-insurance/node/demos/fake-play-thumbnail.png" alt="Watch the demo"></a>
+<a href="https://www.youtube.com/watch?v=1zrWTtuDaQk" target="_blank"><img src="./oai-apps-sdk/zava-insurance/node/demos/fake-play-thumbnail.png" alt="Watch the demo"></a>
+
 
 
 | Prompt | What it does |
