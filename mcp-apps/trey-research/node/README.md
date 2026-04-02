@@ -62,14 +62,17 @@ Instead of hand-authoring an OpenAPI spec, ATK points at the MCP discovery URL a
     Copy the forwarded URL (e.g. `https://<tunnel-id>.devtunnels.ms`) and update the `url` field under the `RemoteMCPServer` runtime in `appPackage/ai-plugin.json`:
 
     ```json
-    "runtimes": [
-        {
-            "type": "RemoteMCPServer",
-            "spec": {
-                "url": "https://<your-tunnel-url>/mcp"
-            }
-        }
-    ]
+     "runtimes": [
+		 {
+			 "type": "RemoteMCPServer",
+			 "spec": {
+				 "url": "<your-mcp-server-url>",
+				 "mcp_tool_description": {
+					 "...": "..."
+				 }
+			 }
+		 }
+	 ]
     ```
 
 4. Inside **src/mcpserver** folder **create your `.env` file** — copy `.env.sample` and update `SERVER_BASE_URL` with your dev tunnel URL:

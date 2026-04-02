@@ -99,7 +99,7 @@ Use the public HTTPS URL from ngrok and append `/mcp` for your MCP spec URL.
 			 "type": "RemoteMCPServer",
 			 "spec": {
 				 "url": "<your-mcp-server-url>",
-				 "x-mcp_tool_description": {
+				 "mcp_tool_description": {
 					 "...": "..."
 				 }
 			 }

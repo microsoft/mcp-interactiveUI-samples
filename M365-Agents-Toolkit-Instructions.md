@@ -15,7 +15,7 @@ For either approach, the instructions below are the same.
 - A remote MCP server that provides UI widgets or that you can modify to implement UI widgets
 - A tool to view MCP server responses, such as [MCP Inspector](https://www.npmjs.com/package/@modelcontextprotocol/inspector)
 - [Visual Studio Code](https://code.visualstudio.com/)
-- The latest prerelease version of [Microsoft 365 Agents Toolkit](https://marketplace.visualstudio.com/items?itemName=TeamsDevApp.ms-teams-vscode-extension) version 6.5.2x or later
+- The latest version of [Microsoft 365 Agents Toolkit](https://marketplace.visualstudio.com/items?itemName=TeamsDevApp.ms-teams-vscode-extension) version 6.6.1 or later
 
 ## Create a declarative agent
 
@@ -48,37 +48,13 @@ When you complete these steps, Agents Toolkit generates the required files for t
    >
    > If your MCP server is in development and doesn't implement authentication, this step is skipped. You need to manually add authentication to your manifest once you add authentication to your server.
 
-5. Get the `tools/list` response JSON from your MCP server using [MCP Inspector](https://www.npmjs.com/package/@modelcontextprotocol/inspector):
 
-   1. Run MCP Inspector and connect to your remote MCP server:
-
-      ```bash
-      npx @modelcontextprotocol/inspector
-      ```
-
-   2. In the Inspector UI, set the **Transport Type** to **Streamable HTTP** and enter your MCP server URL (for example, `https://your-server-url/mcp`) 1️⃣.
-   3. Select **Connect** 2️⃣.
-   4. Select the **Tools** tab 3️⃣, then select **List Tools** 4️⃣.
-   5. Copy the full JSON response 5️⃣. This is the value you need for the next step.
-
-      ![mcp inspector steps](./agents-toolkit-screenshots/steps-for-tools.png)
-
-6. Open `ai-plugin.json` and locate the `mcp_tool_description` property. Replace the existing value with the `tools/list` response JSON you copied in the previous step.
-
-   ![mcp_tool_description in ai-plugin.json](agents-toolkit-screenshots/image4.png)
-
-
-
-   > **Note**
-   >
-   > This step is temporary during the public preview. Agents Toolkit will be updated to make this step unnecessary in the future.
-
-7. Select the **Microsoft 365 Agents Toolkit** icon in the left-hand Activity Bar.
-8. In the **Accounts** pane, select **Sign in to Microsoft 365**. (If you're already signed in, continue to the next step).
-9. Confirm that both **Custom App Upload Enabled** and **Copilot Access Enabled** display under your Microsoft 365 account. If they don't, check with your organization admin. See [Requirements for Copilot extensibility options](https://review.learn.microsoft.com/en-us/microsoft-365-copilot/extensibility/prerequisites#requirements-for-copilot-extensibility-options) for details.
-10. In the **Lifecycle** pane, select **Provision**.
-11. If prompted, add your authentication details.
-12. Wait for the toolkit to report that it finishes provisioning.
+5. Select the **Microsoft 365 Agents Toolkit** icon in the left-hand Activity Bar.
+6. In the **Accounts** pane, select **Sign in to Microsoft 365**. (If you're already signed in, continue to the next step).
+7. Confirm that both **Custom App Upload Enabled** and **Copilot Access Enabled** display under your Microsoft 365 account. If they don't, check with your organization admin. See [Requirements for Copilot extensibility options](https://review.learn.microsoft.com/en-us/microsoft-365-copilot/extensibility/prerequisites#requirements-for-copilot-extensibility-options) for details.
+8. In the **Lifecycle** pane, select **Provision**.
+9. If prompted, add your authentication details.
+10. Wait for the toolkit to report that it finishes provisioning.
 
 ## Test the agent
 
