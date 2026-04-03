@@ -51,8 +51,8 @@ The sample includes:
 ### Step 1: Clone this repo and navigate to the fieldops folder (PowerShell)
 
 ```powershell
-git clone https://github.com/rabwill/mcp-interactive-ui-samples.git
-cd mcp-interactive-ui-samples/mcp-apps/fieldops/node/src/mcpserver
+git clone https://github.com/microsoft/mcp-interactiveUI-samples.git
+cd mcp-interactiveUI-samples/mcp-apps/fieldops/node/src/mcpserver
 ```
 
 ### Step 2: Install Node.js and npm (skip if already installed)

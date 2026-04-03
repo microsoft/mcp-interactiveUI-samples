@@ -51,8 +51,8 @@ The sample includes:
 ### Step 1: Clone this repo and navigate to the fieldops folder (PowerShell)
 
 ```powershell
-git clone https://github.com/rabwill/mcp-interactive-ui-samples.git
-cd mcp-interactive-ui-samples/oai-apps-sdk/fieldops/node
+git clone https://github.com/microsoft/mcp-interactiveUI-samples.git
+cd mcp-interactiveUI-samples/oai-apps-sdk/fieldops/node
 ```
 
 ### Step 2: Install Node.js and npm (skip if already installed)
