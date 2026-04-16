@@ -1,0 +1,629 @@
+{
+  "$schema": "https://aka.ms/json-schemas/copilot-extensions/v2.4/plugin.schema.json",
+  "schema_version": "v2.4",
+  "name_for_human": "Approvals Box",
+  "description_for_human": "AI-powered approval management — review, triage, approve or reject, and create requests.",
+  "namespace": "approvalsbox",
+  "functions": [
+    {
+      "name": "list_pending_approvals",
+      "description": "Returns a summary count and paginated list of approvals assigned to the current user. Use as the primary entry point to the approvals workspace. To bulk-approve or bulk-reject, set open_bulk_action to 'approve' or 'reject' — the widget opens with matching items pre-selected."
+    },
+    {
+      "name": "search_approvals",
+      "description": "Search and browse approvals matching criteria — returns a list. Use for discovery queries like 'Which approvals are due this week?' or 'Show me high-risk approvals'. Do NOT use when the user asks to view, open, or see details on a specific named approval — use fetch_approval_details with 'query' instead.",
+      "capabilities": {
+        "response_semantics": {
+          "data_path": "$",
+          "properties": {},
+          "static_template": {
+            "type": "AdaptiveCard",
+            "$schema": "https://adaptivecards.io/schemas/adaptive-card.json",
+            "version": "1.6",
+            "body": []
+          }
+        }
+      }
+    },
+    {
+      "name": "fetch_approval_details",
+      "description": "Opens a specific approval in a full detail view. Pass the approval name or ID as 'query' — the server resolves it in one call, no prior search needed. When user says 'approve X' or 'reject X' from chat, call this with open_dialog set to 'approve' or 'reject' — NEVER call approve_approval or reject_approval directly.",
+      "capabilities": {
+        "response_semantics": {
+          "data_path": "$",
+          "properties": {},
+          "static_template": {
+            "type": "AdaptiveCard",
+            "$schema": "https://adaptivecards.io/schemas/adaptive-card.json",
+            "version": "1.6",
+            "body": []
+          }
+        }
+      }
+    },
+    {
+      "name": "get_approval_details",
+      "description": "Returns full details for a single approval including fields, risk assessment, approver chain, comments, audit history, and attachments."
+    },
+    {
+      "name": "get_risk_assessment",
+      "description": "Returns the backend risk assessment for an approval, including risk level and specific risk reasons. Use before making decisions or when the user asks why something is risky.",
+      "capabilities": {
+        "response_semantics": {
+          "data_path": "$",
+          "properties": {},
+          "static_template": {
+            "type": "AdaptiveCard",
+            "$schema": "https://adaptivecards.io/schemas/adaptive-card.json",
+            "version": "1.6",
+            "body": []
+          }
+        }
+      }
+    },
+    {
+      "name": "get_similar_approvals",
+      "description": "Returns up to 5 previously submitted approvals of the same type for AI comparison context. Use when the user asks to compare or check precedent for an approval."
+    },
+    {
+      "name": "show_create_form",
+      "description": "Opens the approval creation form widget. ALWAYS extract as much context as possible from the user's message to prefill the form — type, title, summary, amount, vendor, department, dates, etc.",
+      "capabilities": {
+        "response_semantics": {
+          "data_path": "$",
+          "properties": {},
+          "static_template": {
+            "type": "AdaptiveCard",
+            "$schema": "https://adaptivecards.io/schemas/adaptive-card.json",
+            "version": "1.6",
+            "body": []
+          }
+        }
+      }
+    },
+    {
+      "name": "approve_approval",
+      "description": "Approves a single pending approval. Only call from within the widget confirm dialog — NEVER call directly from chat. Use fetch_approval_details with open_dialog='approve' for chat-initiated approvals.",
+      "capabilities": {
+        "response_semantics": {
+          "data_path": "$",
+          "properties": {},
+          "static_template": {
+            "type": "AdaptiveCard",
+            "$schema": "https://adaptivecards.io/schemas/adaptive-card.json",
+            "version": "1.6",
+            "body": []
+          }
+        }
+      }
+    },
+    {
+      "name": "reject_approval",
+      "description": "Rejects a single pending approval. Only call from within the widget reject dialog — NEVER call directly from chat. Use fetch_approval_details with open_dialog='reject' for chat-initiated rejections.",
+      "capabilities": {
+        "response_semantics": {
+          "data_path": "$",
+          "properties": {},
+          "static_template": {
+            "type": "AdaptiveCard",
+            "$schema": "https://adaptivecards.io/schemas/adaptive-card.json",
+            "version": "1.6",
+            "body": []
+          }
+        }
+      }
+    },
+    {
+      "name": "bulk_decide_approvals",
+      "description": "Approve or reject multiple approvals at once. Only call from the widget bulk confirm dialog after user review. Returns per-item results.",
+      "capabilities": {
+        "response_semantics": {
+          "data_path": "$",
+          "properties": {},
+          "static_template": {
+            "type": "AdaptiveCard",
+            "$schema": "https://adaptivecards.io/schemas/adaptive-card.json",
+            "version": "1.6",
+            "body": []
+          }
+        }
+      }
+    },
+    {
+      "name": "add_comment_to_approval",
+      "description": "Adds a comment to an approval without changing its status. Use for notes, questions to the requester, or follow-up context."
+    },
+    {
+      "name": "create_approval_request",
+      "description": "Creates a new approval request. Risk level is computed by the backend. Typically called after the user completes the create form widget.",
+      "capabilities": {
+        "response_semantics": {
+          "data_path": "$",
+          "properties": {},
+          "static_template": {
+            "type": "AdaptiveCard",
+            "$schema": "https://adaptivecards.io/schemas/adaptive-card.json",
+            "version": "1.6",
+            "body": []
+          }
+        }
+      }
+    }
+  ],
+  "runtimes": [
+    {
+      "type": "RemoteMCPServer",
+      "auth": {
+        "type": "None"
+      },
+      "spec": {
+        "url": "http://localhost:3001/mcp",
+        "mcp_tool_description": {
+          "tools": [
+            {
+              "name": "list_pending_approvals",
+              "description": "Returns a summary count and paginated list of approvals assigned to the current user. Supports filtering by status, risk level, type, requester, due date, and attachment presence. Set open_bulk_action to 'approve' or 'reject' to open the widget with matching items pre-selected.",
+              "inputSchema": {
+                "type": "object",
+                "properties": {
+                  "status": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "enum": [
+                        "pending",
+                        "approved",
+                        "rejected",
+                        "cancelled"
+                      ]
+                    },
+                    "description": "Filter by status. Defaults to pending only."
+                  },
+                  "risk_level": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "enum": [
+                        "low",
+                        "medium",
+                        "high"
+                      ]
+                    },
+                    "description": "Filter by risk level."
+                  },
+                  "type": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "enum": [
+                        "promo_pricing",
+                        "purchase_order",
+                        "capex",
+                        "contract_sow",
+                        "travel_exception",
+                        "marketing_budget",
+                        "vendor_onboarding"
+                      ]
+                    },
+                    "description": "Filter by approval type."
+                  },
+                  "requester": {
+                    "type": "string",
+                    "description": "Filter by requester name (partial match)."
+                  },
+                  "has_attachments": {
+                    "type": "boolean",
+                    "description": "Filter to only approvals with or without attachments."
+                  },
+                  "due_before": {
+                    "type": "string",
+                    "description": "Filter approvals due before this ISO date."
+                  },
+                  "query": {
+                    "type": "string",
+                    "description": "Free-text search across title, summary, requester, and fields."
+                  },
+                  "sort": {
+                    "type": "string",
+                    "enum": [
+                      "due_date",
+                      "amount",
+                      "submitted_date",
+                      "risk"
+                    ],
+                    "description": "Sort field. Defaults to due_date ascending."
+                  },
+                  "limit": {
+                    "type": "number",
+                    "description": "Page size (1-100). Defaults to 20."
+                  },
+                  "cursor": {
+                    "type": "string",
+                    "description": "Pagination cursor from previous response."
+                  },
+                  "open_bulk_action": {
+                    "type": "string",
+                    "enum": [
+                      "approve",
+                      "reject"
+                    ],
+                    "description": "When set, widget opens with filtered items pre-selected and bulk action dialog open."
+                  }
+                }
+              },
+              "annotations": {
+                "readOnlyHint": true
+              },
+              "_meta": {
+                "openai/outputTemplate": "ui://widget/pending-approvals.html",
+                "openai/toolInvocation/invoking": "Loading your approvals…",
+                "openai/toolInvocation/invoked": "Approvals ready",
+                "openai/widgetAccessible": true
+              }
+            },
+            {
+              "name": "search_approvals",
+              "description": "Search and browse approvals matching criteria — returns a list. Use for discovery queries. Do NOT use when the user asks to view or see details on a specific named approval — use fetch_approval_details with 'query' instead.",
+              "inputSchema": {
+                "type": "object",
+                "required": [
+                  "query"
+                ],
+                "properties": {
+                  "query": {
+                    "type": "string",
+                    "description": "Search query — natural language or keywords."
+                  },
+                  "status": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "enum": [
+                        "pending",
+                        "approved",
+                        "rejected",
+                        "cancelled"
+                      ]
+                    },
+                    "description": "Filter by status."
+                  },
+                  "limit": {
+                    "type": "number",
+                    "description": "Maximum results to return."
+                  }
+                }
+              },
+              "annotations": {
+                "readOnlyHint": true
+              },
+              "_meta": {
+                "openai/outputTemplate": "ui://widget/pending-approvals.html",
+                "openai/toolInvocation/invoking": "Loading your approvals…",
+                "openai/toolInvocation/invoked": "Approvals ready"
+              }
+            },
+            {
+              "name": "fetch_approval_details",
+              "description": "Opens a specific approval in a full detail view. Pass the approval name or ID as 'query' — the server resolves it in one call, no prior search needed. When user says 'approve X' or 'reject X' from chat, call this with open_dialog set to 'approve' or 'reject' — NEVER call approve_approval or reject_approval directly.",
+              "inputSchema": {
+                "type": "object",
+                "required": [
+                  "query"
+                ],
+                "properties": {
+                  "query": {
+                    "type": "string",
+                    "description": "The approval name, title, or ID (e.g. 'Tokyo Sales Conference' or 'apr_1001'). The server resolves it automatically."
+                  },
+                  "open_dialog": {
+                    "type": "string",
+                    "enum": [
+                      "approve",
+                      "reject"
+                    ],
+                    "description": "When set, opens the approve or reject confirmation dialog immediately on load."
+                  }
+                }
+              },
+              "annotations": {
+                "readOnlyHint": true
+              },
+              "_meta": {
+                "openai/outputTemplate": "ui://widget/pending-approvals.html",
+                "openai/toolInvocation/invoking": "Loading approval details…",
+                "openai/toolInvocation/invoked": "Approval loaded",
+                "openai/widgetAccessible": true
+              }
+            },
+            {
+              "name": "get_approval_details",
+              "description": "Returns full details for a single approval including fields, risk assessment, approver chain, comments, audit history, and attachments.",
+              "inputSchema": {
+                "type": "object",
+                "required": [
+                  "approval_id"
+                ],
+                "properties": {
+                  "approval_id": {
+                    "type": "string",
+                    "description": "The approval ID (e.g. apr_1001)."
+                  }
+                }
+              },
+              "annotations": {
+                "readOnlyHint": true
+              },
+              "_meta": {
+                "openai/widgetAccessible": true
+              }
+            },
+            {
+              "name": "get_risk_assessment",
+              "description": "Returns the backend risk assessment for an approval, including risk level and specific risk reasons.",
+              "inputSchema": {
+                "type": "object",
+                "required": [
+                  "approval_id"
+                ],
+                "properties": {
+                  "approval_id": {
+                    "type": "string",
+                    "description": "The approval ID."
+                  }
+                }
+              }
+            },
+            {
+              "name": "get_similar_approvals",
+              "description": "Returns up to 5 previously submitted approvals of the same type for AI comparison context.",
+              "inputSchema": {
+                "type": "object",
+                "required": [
+                  "approval_id"
+                ],
+                "properties": {
+                  "approval_id": {
+                    "type": "string",
+                    "description": "The approval ID to find similar items for."
+                  }
+                }
+              },
+              "_meta": {
+                "openai/widgetAccessible": true
+              }
+            },
+            {
+              "name": "show_create_form",
+              "description": "Opens the approval creation form widget. ALWAYS extract as much context as possible from the user's message to prefill the form.",
+              "inputSchema": {
+                "type": "object",
+                "properties": {
+                  "type_hint": {
+                    "type": "string",
+                    "enum": [
+                      "promo_pricing",
+                      "purchase_order",
+                      "capex",
+                      "contract_sow",
+                      "travel_exception",
+                      "marketing_budget",
+                      "vendor_onboarding"
+                    ],
+                    "description": "Approval type inferred from context."
+                  },
+                  "title": {
+                    "type": "string",
+                    "description": "Pre-filled title derived from the user's description."
+                  },
+                  "summary": {
+                    "type": "string",
+                    "description": "Pre-filled business justification extracted from the conversation."
+                  },
+                  "prefill_fields": {
+                    "type": "string",
+                    "description": "JSON-encoded key-value map of type-specific field values to pre-populate."
+                  }
+                }
+              },
+              "annotations": {
+                "readOnlyHint": true
+              },
+              "_meta": {
+                "openai/outputTemplate": "ui://widget/create-approval.html",
+                "openai/toolInvocation/invoking": "Opening create form…",
+                "openai/toolInvocation/invoked": "Form ready"
+              }
+            },
+            {
+              "name": "approve_approval",
+              "description": "Approves a single pending approval. Only call from within the widget confirm dialog — NEVER call directly from chat.",
+              "inputSchema": {
+                "type": "object",
+                "required": [
+                  "approval_id"
+                ],
+                "properties": {
+                  "approval_id": {
+                    "type": "string",
+                    "description": "The approval ID to approve."
+                  },
+                  "comment": {
+                    "type": "string",
+                    "description": "Optional comment to attach to the approval decision."
+                  }
+                }
+              },
+              "_meta": {
+                "openai/visibility": "private",
+                "openai/widgetAccessible": true
+              }
+            },
+            {
+              "name": "reject_approval",
+              "description": "Rejects a single pending approval. Only call from within the widget reject dialog — NEVER call directly from chat.",
+              "inputSchema": {
+                "type": "object",
+                "required": [
+                  "approval_id",
+                  "reason"
+                ],
+                "properties": {
+                  "approval_id": {
+                    "type": "string",
+                    "description": "The approval ID to reject."
+                  },
+                  "reason": {
+                    "type": "string",
+                    "description": "Rejection reason — required, stored in audit history."
+                  },
+                  "comment": {
+                    "type": "string",
+                    "description": "Optional additional comment."
+                  }
+                }
+              },
+              "_meta": {
+                "openai/visibility": "private",
+                "openai/widgetAccessible": true
+              }
+            },
+            {
+              "name": "bulk_decide_approvals",
+              "description": "Approve or reject multiple approvals at once. Only call from the widget bulk confirm dialog after user review.",
+              "inputSchema": {
+                "type": "object",
+                "required": [
+                  "approval_ids",
+                  "decision"
+                ],
+                "properties": {
+                  "approval_ids": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "description": "List of approval IDs to act on."
+                  },
+                  "decision": {
+                    "type": "string",
+                    "enum": [
+                      "approve",
+                      "reject"
+                    ],
+                    "description": "The decision to apply to all selected approvals."
+                  },
+                  "comment": {
+                    "type": "string",
+                    "description": "Shared comment applied to all items."
+                  },
+                  "reason": {
+                    "type": "string",
+                    "description": "Rejection reason — required when decision is 'reject'."
+                  }
+                }
+              },
+              "_meta": {
+                "openai/visibility": "private",
+                "openai/widgetAccessible": true
+              }
+            },
+            {
+              "name": "add_comment_to_approval",
+              "description": "Adds a comment to an approval without changing its status. Use for notes, questions to the requester, or follow-up context.",
+              "inputSchema": {
+                "type": "object",
+                "required": [
+                  "approval_id",
+                  "body"
+                ],
+                "properties": {
+                  "approval_id": {
+                    "type": "string",
+                    "description": "The approval ID."
+                  },
+                  "body": {
+                    "type": "string",
+                    "description": "Comment text."
+                  }
+                }
+              },
+              "_meta": {
+                "openai/visibility": "private",
+                "openai/widgetAccessible": true
+              }
+            },
+            {
+              "name": "create_approval_request",
+              "description": "Creates a new approval request. Risk level is computed by the backend. Typically called after the user completes the create form widget.",
+              "inputSchema": {
+                "type": "object",
+                "required": [
+                  "type",
+                  "title",
+                  "summary",
+                  "fields"
+                ],
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "enum": [
+                      "promo_pricing",
+                      "purchase_order",
+                      "capex",
+                      "contract_sow",
+                      "travel_exception",
+                      "marketing_budget",
+                      "vendor_onboarding"
+                    ],
+                    "description": "Approval type."
+                  },
+                  "title": {
+                    "type": "string",
+                    "description": "Short descriptive title."
+                  },
+                  "summary": {
+                    "type": "string",
+                    "description": "Business justification or request summary."
+                  },
+                  "fields": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "description": "Dynamic fields as 'Label: Value' strings."
+                  },
+                  "attachment_ids": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "description": "File IDs uploaded via the widget."
+                  }
+                }
+              },
+              "_meta": {
+                "openai/visibility": "private",
+                "openai/widgetAccessible": true
+              }
+            }
+          ]
+        }
+      },
+      "run_for_functions": [
+        "list_pending_approvals",
+        "search_approvals",
+        "fetch_approval_details",
+        "get_approval_details",
+        "get_risk_assessment",
+        "get_similar_approvals",
+        "get_attachment_preview",
+        "show_create_form",
+        "approve_approval",
+        "reject_approval",
+        "bulk_decide_approvals",
+        "add_comment_to_approval",
+        "create_approval_request"
+      ]
+    }
+  ]
+}

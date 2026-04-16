@@ -1,0 +1,7 @@
+node_modules/
+dist/
+approvals.db
+approvals.db-shm
+approvals.db-wal
+*.zip
+*.tar.gz
