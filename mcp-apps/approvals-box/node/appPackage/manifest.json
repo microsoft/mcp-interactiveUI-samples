@@ -1,0 +1,35 @@
+{
+  "$schema": "https://developer.microsoft.com/en-us/json-schemas/teams/v1.25/MicrosoftTeams.schema.json",
+  "manifestVersion": "1.25",
+  "version": "1.0.0",
+  "id": "8c4a9e2f-3b1d-4f7a-9c6e-2a0d5b8f1e3c",
+  "developer": {
+    "name": "Shiladitya Saha",
+    "websiteUrl": "https://your-company.com",
+    "privacyUrl": "https://your-company.com/privacy",
+    "termsOfUseUrl": "https://your-company.com/terms"
+  },
+  "name": {
+    "short": "Approvals Box",
+    "full": "Approvals Box — AI-Powered Approval Management"
+  },
+  "description": {
+    "short": "AI triages your approval queue — surface risk, act fast, stay in control.",
+    "full": "Approvals Box brings AI-powered decision intelligence to your approval queue inside Microsoft 365 Copilot. Instead of manually reviewing every request, the AI automatically scores risk, flags overdue items, and drafts rejection reasons — so you spend your attention where it matters.\n\n**What the AI does for you:**\n- **Risk triage** — Every approval is automatically scored high, medium, or low risk with plain-English reasons, so you know what to scrutinise and what to rubber-stamp.\n- **Smart summaries** — Ask 'what needs my attention most?' and get a prioritised breakdown of urgent, overdue, and high-value items across your queue.\n- **Bulk decisions** — Say 'approve all low-risk purchase orders' and the AI filters, pre-selects, and confirms the batch — no clicking through individual records.\n- **Pre-filled forms** — Describe a new request in plain language ('I need capex for $120k of data center equipment') and the AI extracts type, amount, and justification into the form automatically.\n- **AI-drafted rejections** — When you reject a request, the AI pre-writes a reason grounded in the specific risk factors, ready to send with one click.\n- **Policy awareness** — Ask whether a request is compliant before acting; the AI reasons over the details and recommends approve or reject with supporting rationale."
+  },
+  "icons": {
+    "outline": "outline.png",
+    "color": "color.png"
+  },
+  "accentColor": "#0078D4",
+  "permissions": [],
+  "validDomains": [],
+  "copilotAgents": {
+    "declarativeAgents": [
+      {
+        "id": "declarativeAgent",
+        "file": "declarativeAgent.json"
+      }
+    ]
+  }
+}

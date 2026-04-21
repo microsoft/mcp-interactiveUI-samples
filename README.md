@@ -90,10 +90,30 @@ MCP server that recommends learning and training courses with embedded video pre
 | Show me a course on Semantic Kernel. | Renders the course widget with video player. |
 | What training is available for Azure AI? | Returns a recommended course card. |
 
+---
+
+### Approvals Box — AI-powered Approval Queue Management
+
+MCP server for approval queue management with risk triage, bulk decisions, and inline widgets for reviewing, approving, rejecting, and creating approval requests. Auto-seeded with ~50 realistic demo approvals across 7 types.
+
+- [MCP Apps version](mcp-apps/approvals-box/node/README.md)
+
+<a href="https://youtu.be/Zre_6fFKBXg" target="_blank"><img src="https://img.youtube.com/vi/Zre_6fFKBXg/maxresdefault.jpg" alt="Watch the Approvals Box demo"></a>
+
+| Prompt | What it does |
+|---|---|
+| Show me my pending approvals. | Opens the list widget with all pending approvals, sorted by due date. |
+| Which approvals are high risk? | Filters the list to high-risk items and opens the widget. |
+| Show me the details for the Activision InComm approval. | Resolves the approval by name and opens the detail widget. |
+| Approve the pending purchase order from Kevin Walsh. | Opens the detail widget with the approve dialog pre-opened. |
+| Bulk reject all low-priority travel exceptions. | Opens the list filtered to travel exceptions with the bulk-reject dialog. |
+| Draft a rejection reason for the capex request. | AI drafts a rejection note; confirm to reject. |
+
 ## Repository structure
 
 ```
 mcp-apps/                        # MCP Apps SDK samples
+  approvals-box/node/            # AI-powered approval queue management
   employee-training/node/        # Learning course recommendations
   fieldops/node/                 # Field service dispatch
   trey-research/node/            # HR consultant management
