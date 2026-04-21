@@ -96,9 +96,11 @@ MCP server that recommends learning and training courses with embedded video pre
 
 MCP server for approval queue management with risk triage, bulk decisions, and inline widgets for reviewing, approving, rejecting, and creating approval requests. Auto-seeded with ~50 realistic demo approvals across 7 types.
 
-- [MCP Apps version](mcp-apps/approvals-box/node/README.md)
+- [OpenAI Apps SDK version](oai-apps-sdk/approvals-box/node/README.md)
 
 <a href="https://youtu.be/Zre_6fFKBXg" target="_blank"><img src="https://img.youtube.com/vi/Zre_6fFKBXg/maxresdefault.jpg" alt="Watch the Approvals Box demo"></a>
+
+![Approvals Box detail widget](oai-apps-sdk/approvals-box/node/demos/screenshots/approvals-box-detail.png)
 
 | Prompt | What it does |
 |---|---|
@@ -113,13 +115,13 @@ MCP server for approval queue management with risk triage, bulk decisions, and i
 
 ```
 mcp-apps/                        # MCP Apps SDK samples
-  approvals-box/node/            # AI-powered approval queue management
   employee-training/node/        # Learning course recommendations
   fieldops/node/                 # Field service dispatch
   trey-research/node/            # HR consultant management
   zava-insurance/node/           # Insurance claims management
 
 oai-apps-sdk/                    # OpenAI Apps SDK samples
+  approvals-box/node/            # AI-powered approval queue management
   fieldops/node/                 # Field service dispatch
   trey-research/node/            # HR consultant management (declarative agent)
   zava-insurance/node/           # Insurance claims management (declarative agent)

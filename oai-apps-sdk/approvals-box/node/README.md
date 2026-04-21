@@ -2,7 +2,7 @@
 
 ## 1. What this sample is about
 
-This directory contains a **Model Context Protocol (MCP) App Server** for AI-powered approval queue management. Built with Node.js, Express, and the MCP Apps SDK, it exposes a set of tools so you can manage your approval queue through natural conversation in Microsoft 365 Copilot — with visually rich inline widgets rendered directly in the chat.
+This directory contains a **Model Context Protocol (MCP) App Server** for AI-powered approval queue management. Built with Node.js, Express, and the OpenAI Apps SDK, it exposes a set of tools so you can manage your approval queue through natural conversation in Microsoft 365 Copilot — with visually rich inline widgets rendered directly in the chat.
 
 The sample includes three interactive widgets:
 
@@ -20,6 +20,8 @@ The sample includes three interactive widgets:
 - **Auto-seeded demo data** — A realistic dataset of ~50 approvals across 7 types is seeded automatically on first run
 
 <a href="https://youtu.be/Zre_6fFKBXg" target="_blank"><img src="https://img.youtube.com/vi/Zre_6fFKBXg/maxresdefault.jpg" alt="Watch the Approvals Box demo"></a>
+
+![Approvals Box detail widget](demos/screenshots/approvals-box-detail.png)
 
 ## 2. Sample prompts
 
