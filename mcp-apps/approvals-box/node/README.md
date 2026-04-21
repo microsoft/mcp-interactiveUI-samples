@@ -19,6 +19,8 @@ The sample includes three interactive widgets:
 - **AI-drafted rejections** — Ask Copilot to draft a rejection reason before confirming
 - **Auto-seeded demo data** — A realistic dataset of ~50 approvals across 7 types is seeded automatically on first run
 
+<a href="https://youtu.be/Zre_6fFKBXg" target="_blank"><img src="https://img.youtube.com/vi/Zre_6fFKBXg/maxresdefault.jpg" alt="Watch the Approvals Box demo"></a>
+
 ## 2. Sample prompts
 
 | Prompt | What it does |

@@ -98,6 +98,8 @@ MCP server for approval queue management with risk triage, bulk decisions, and i
 
 - [MCP Apps version](mcp-apps/approvals-box/node/README.md)
 
+<a href="https://youtu.be/Zre_6fFKBXg" target="_blank"><img src="https://img.youtube.com/vi/Zre_6fFKBXg/maxresdefault.jpg" alt="Watch the Approvals Box demo"></a>
+
 | Prompt | What it does |
 |---|---|
 | Show me my pending approvals. | Opens the list widget with all pending approvals, sorted by due date. |
