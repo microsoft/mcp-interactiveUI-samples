@@ -1,0 +1,178 @@
+{
+    "tools": [
+        {
+            "name": "list_expense_items",
+            "description": "Fetch expense line items from credit card transactions. Optionally filter by date range using start_date and end_date (ISO 8601). Returns expense details including expense id, category, merchant, date/time, and amount. Call this first so the user can select expenses before creating a draft report.",
+            "inputSchema": {
+                "type": "object",
+                "properties": {
+                    "start_date": {
+                        "type": "string",
+                        "description": "Optional start date (ISO 8601) to filter expenses. Only expenses on or after this date are returned."
+                    },
+                    "end_date": {
+                        "type": "string",
+                        "description": "Optional end date (ISO 8601) to filter expenses. Only expenses on or before this date are returned."
+                    }
+                },
+                "additionalProperties": false
+            },
+            "annotations": {
+                "readOnlyHint": true
+            },
+            "_meta": {
+                "ui": {
+                    "resourceUri": "ui://list-expense-items/app.html"
+                }
+            }
+        },
+        {
+            "name": "add_expense_receipts",
+            "description": "Attach receipts to an expense report draft. If the draft expense report details (draft_id and expense list) are already available in your conversation context, use them directly — do NOT call fetch_draft_expense_report again. Only call fetch_draft_expense_report first if the draft details are missing from context. Match each receipt against the expense items in the draft. Include the expense_id, file_name, file_url, and type for each receipt. Receipts that do not match any draft expense are skipped.",
+            "inputSchema": {
+                "type": "object",
+                "properties": {
+                    "receipts": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "expense_id": {
+                                    "type": "string",
+                                    "description": "The selected expense ID to attach the receipt to (e.g. 'EXP-2001'). Receipts that do not match any existing expense should be skipped."
+                                },
+                                "file_name": {
+                                    "type": "string",
+                                    "description": "The display name of the file or email subject. For odsp: the file name (e.g. 'receipt.pdf'). For email: the email subject (e.g. 'Dinner receipt from vendor')."
+                                },
+                                "file_url": {
+                                    "type": "string",
+                                    "description": "The URL of the file or email. For odsp: the SharePoint/OneDrive file URL (e.g. 'https://contoso.sharepoint.com/sites/docs/receipt.pdf'). For email: the Outlook Web (OWA) URL (e.g. 'https://outlook.office365.com/owa/?ItemID=AAMk...&exvsurl=1&viewmodel=ReadMessageItem')."
+                                },
+                                "type": {
+                                    "type": "string",
+                                    "enum": ["odsp", "email"],
+                                    "default": "odsp",
+                                    "description": "The type of receipt source. 'odsp' (default) for OneDrive/SharePoint file links. 'email' for Outlook Web email URLs whose file attachments should be extracted as receipts."
+                                }
+                            },
+                            "required": [
+                                "expense_id",
+                                "file_url"
+                            ],
+                            "additionalProperties": false
+                        }
+                    }
+                },
+                "required": [
+                    "receipts"
+                ],
+                "additionalProperties": false,
+                "$schema": "http://json-schema.org/draft-07/schema#"
+            },
+            "annotations": {
+                "readOnlyHint": false
+            },
+            "_meta": {
+                "ui": {
+                    "resourceUri": "ui://expense-report-draft/app.html"
+                },
+                "microsoft/filePermissionGrant": {
+                    "clientId": "3813cbe2-8c81-4f1f-87ac-508f728492ee",
+                    "parameters": [
+                        { "jsonPath": "$.receipts[*].file_url" }
+                    ]
+                }
+            }
+        },
+        {
+            "name": "create_expense_report_draft",
+            "description": "Create draft expense for selected expense IDs. Make sure you have selected expense ids in your context before you call this tool. Otherwise ignore and call list_expense_items for user to first select the expenses, DO not assume any default expense selection and do not create a draft report without explicit expense IDs in context.",
+            "inputSchema": {
+                "type": "object",
+                "properties": {
+                    "expense_ids": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "description": "List of selected expense IDs to include in the draft report."
+                    }
+                },
+                "required": [
+                    "expense_ids"
+                ],
+                "additionalProperties": false
+            },
+            "annotations": {
+                "readOnlyHint": true
+            },
+            "_meta": {
+                "ui": {
+                    "resourceUri": "ui://expense-report-draft/app.html"
+                }
+            }
+        },
+        {
+            "name": "fetch_draft_expense_report",
+            "description": "Fetch the current draft expense report. Returns expense details of the previously created draft. If no draft exists, returns a message indicating no draft has been created yet.",
+            "inputSchema": {
+                "type": "object",
+                "properties": {},
+                "additionalProperties": false
+            },
+            "annotations": {
+                "readOnlyHint": true
+            }
+        },
+        {
+            "name": "submit_expense_report",
+            "description": "Submits the finalised expense report for manager approval. Call this after all receipts have been attached to their expense line items. Accepts the list of expense IDs to include in the report, an optional draft ID, and an optional submitter note. Returns a report reference number and confirmation message.",
+            "inputSchema": {
+                "type": "object",
+                "properties": {
+                    "expense_ids": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "description": "List of expense IDs to include in the submitted report (e.g. ['EXP-1001', 'EXP-1002'])."
+                    },
+                    "draft_id": {
+                        "type": "string",
+                        "description": "Optional draft report ID if submitting from an existing draft."
+                    },
+                    "note": {
+                        "type": "string",
+                        "description": "Optional free-text note from the submitter to accompany the report."
+                    }
+                },
+                "required": [
+                    "expense_ids"
+                ],
+                "additionalProperties": false
+            },
+            "annotations": {
+                "readOnlyHint": false
+            },
+            "_meta": {
+                "ui": {
+                    "visibility": [
+                        "app"
+                    ]
+                }
+            }
+        },
+        {
+            "name": "sign_out",
+            "description": "Clears the cached OBO (On-Behalf-Of) Graph token for the current user and triggers a fresh sign-in and consent flow. Call this tool when the user wants to sign out, switch accounts, re-grant consent, or reset their authentication state. After calling this tool the user must re-authenticate — ask them to refresh or re-open the agent conversation to sign in again.",
+            "inputSchema": {
+                "type": "object",
+                "properties": {}
+            },
+            "annotations": {
+                "readOnlyHint": false
+            }
+        }
+    ]
+}

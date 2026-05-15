@@ -12,6 +12,22 @@ You can add interactive UI widgets to your declarative agents by adding a Model 
 
 ## Samples
 
+### Expense Submission — AI-powered Document & File Workflows
+
+MCP server for expense report filing with file handling, Entra SSO with On-Behalf-Of (OBO) flow, and Microsoft Graph API integration. Demonstrates receipt matching from email, OneDrive/SharePoint, and local folders with interactive widgets for expense management.
+
+- [MCP Apps version](mcp-apps/expense-submission/node/README.md)
+- Watch demo on YouTube: https://www.youtube.com/watch?v=Jh7w13q-a6I&t=3s
+
+[![Watch demo video](mcp-apps/expense-submission/node/demos/screenshots/image1.png)](https://www.youtube.com/watch?v=Jh7w13q-a6I&t=3s)
+
+| Prompt | What it does |
+|---|---|
+| Help me file my expense report for this month's business trip. | Lists expense items, lets you select them, creates a draft, auto-matches email receipts, and guides you through submission. |
+| *(Upload receipts in Copilot chat)* | The agent automatically matches uploaded receipts with your system of record data (in this example, dummy corporate card transactions). |
+
+---
+
 ### Field Service Dispatch
 
 MCP server for a field service dispatch workflow with assignment intake, map visualization, dispatch planning, and confirmation flow. Requires a free Mapbox token for map widgets.
@@ -116,6 +132,7 @@ MCP server that recommends learning and training courses with embedded video pre
 ```
 mcp-apps/                        # MCP Apps SDK samples
   employee-training/node/        # Learning course recommendations
+  expense-submission/node/       # Expense filing with Entra SSO & file handling
   fieldops/node/                 # Field service dispatch
   trey-research/node/            # HR consultant management
   zava-insurance/node/           # Insurance claims management

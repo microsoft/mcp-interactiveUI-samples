@@ -1,0 +1,7 @@
+node_modules/
+dist/
+package-lock.json
+*.log
+.DS_Store
+Thumbs.db
+.azurite/

@@ -11,7 +11,7 @@ For either approach, the instructions below are the same.
 
 ## Prerequisites
 
-- Requirements specified in [Requirements for Copilot extensibility options](https://review.learn.microsoft.com/en-us/microsoft-365-copilot/extensibility/prerequisites#requirements-for-copilot-extensibility-options)
+- Requirements specified in [Requirements for Copilot extensibility options](https://learn.microsoft.com/en-us/microsoft-365-copilot/extensibility/prerequisites#requirements-for-copilot-extensibility-options)
 - A remote MCP server that provides UI widgets or that you can modify to implement UI widgets
 - A tool to view MCP server responses, such as [MCP Inspector](https://www.npmjs.com/package/@modelcontextprotocol/inspector)
 - [Visual Studio Code](https://code.visualstudio.com/)
@@ -51,7 +51,7 @@ When you complete these steps, Agents Toolkit generates the required files for t
 
 5. Select the **Microsoft 365 Agents Toolkit** icon in the left-hand Activity Bar.
 6. In the **Accounts** pane, select **Sign in to Microsoft 365**. (If you're already signed in, continue to the next step).
-7. Confirm that both **Custom App Upload Enabled** and **Copilot Access Enabled** display under your Microsoft 365 account. If they don't, check with your organization admin. See [Requirements for Copilot extensibility options](https://review.learn.microsoft.com/en-us/microsoft-365-copilot/extensibility/prerequisites#requirements-for-copilot-extensibility-options) for details.
+7. Confirm that both **Custom App Upload Enabled** and **Copilot Access Enabled** display under your Microsoft 365 account. If they don't, check with your organization admin. See [Requirements for Copilot extensibility options](https://learn.microsoft.com/en-us/microsoft-365-copilot/extensibility/prerequisites#requirements-for-copilot-extensibility-options) for details.
 8. In the **Lifecycle** pane, select **Provision**.
 9. If prompted, add your authentication details.
 10. Wait for the toolkit to report that it finishes provisioning.
@@ -141,7 +141,7 @@ Microsoft 365 Copilot supports the following capabilities.
 | --- | --- | --- |
 | connect_domains | connectDomains | ✅ |
 | resource_domains | resourceDomains | ✅ |
-| frame_domains | frameDomains | ❌ |
+| frame_domains | frameDomains | ✅|
 | redirect_domains | — | ❌ |
 | — | baseUriDomains | ❌ |
 

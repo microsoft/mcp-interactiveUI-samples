@@ -1,0 +1,43 @@
+{
+    "$schema": "https://developer.microsoft.com/en-us/json-schemas/teams/v1.24/MicrosoftTeams.schema.json",
+    "manifestVersion": "1.24",
+    "version": "1.1.0",
+    "id": "ec235738-636c-433a-a3a4-fb4dec3b262e",
+    "developer": {
+        "name": "My App, Inc.",
+        "websiteUrl": "https://www.example.com",
+        "privacyUrl": "https://www.example.com/privacy",
+        "termsOfUseUrl": "https://www.example.com/termofuse"
+    },
+    "icons": {
+        "color": "color.png",
+        "outline": "outline.png"
+    },
+    "name": {
+        "short": "Expense Submission",
+        "full": "Expense Submission MCP App Sample"
+    },
+    "description": {
+        "short": "Submit and manage expense reports with receipts",
+        "full": "An MCP App sample that demonstrates expense submission with Entra SSO authentication and OBO token exchange for Graph API access"
+    },
+    "accentColor": "#FFFFFF",
+    "composeExtensions": [],
+    "copilotAgents": {
+        "declarativeAgents": [            
+            {
+                "id": "declarativeAgent",
+                "file": "declarativeAgent.json"
+            }
+        ]
+    },
+    "permissions": [
+        "identity",
+        "messageTeamMembers"
+    ],
+    "validDomains": [],
+    "webApplicationInfo": {
+        "id": "<your-entra-client-id>",
+        "resource": "api://<your-entra-client-id>"
+    }
+}

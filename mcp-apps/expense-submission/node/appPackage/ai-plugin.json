@@ -1,0 +1,64 @@
+{
+    "$schema": "https://aka.ms/json-schemas/copilot-extensions/v2.1/plugin.schema.json",
+    "schema_version": "v2.4",
+    "name_for_human": "Expense Assist",
+    "description_for_human": "Submit and manage expense reports with receipt attachments",
+    "contact_email": "publisher-email@example.com",
+    "namespace": "expensesagent",
+    "functions": [
+        {
+            "name": "list_expense_items",
+            "description": "Fetch expense line items from credit card transactions. Optionally filter by date range. Returns expense details including expense id, category, merchant, date/time, and amount. Call this first so the user can select expenses before creating a draft report."
+        },
+        {
+            "name": "add_expense_receipts",
+            "description": "This tool helps attach receipts to expense report. You must always first call fetch_draft_expense_report tool first. After you get the draft expense report you will help attach receipts to it. Match each receipt file against the expense items in the draft. Include the expense_id, file (as markdown link), and type for each receipt. For odsp: [file_name](file_url). For email: [email_subject](email_url). Receipts that do not match any draft expense are skipped.",
+            "capabilities": {
+                "confirmation": {
+                    "type": "AdaptiveCard",
+                    "body": "Allow attaching receipts to your expense report"
+                }
+            }
+        },
+        {
+            "name": "create_expense_report_draft",
+            "description": "Create draft expense for selected expense IDs. Make sure you have selected expense ids in your context before you call this tool. Otherwise ignore and call list_expense_items for user to first select the expenses, DO not assume any default expense selection and do not create a draft report without explicit expense IDs in context"
+        },
+        {
+            "name": "fetch_draft_expense_report",
+            "description": "Fetch the current draft expense report. Returns expense details of the previously created draft. If no draft exists, returns a message indicating no draft has been created yet."
+        },
+        {
+            "name": "sign_out",
+            "description": "Call this tool when the user wants to sign out"
+        },
+        {
+            "name": "submit_expense_report",
+            "description": "Submits the finalised expense report for manager approval. Call this after all receipts have been attached to their expense line items. Accepts the list of expense IDs to include in the report, an optional draft ID, and an optional submitter note. Returns a report reference number and confirmation message."
+        }
+    ],
+    "runtimes": [
+        {
+            "type": "RemoteMCPServer",
+            "spec": {
+                "url": "<your-mcp-server-url>",
+                "enable_dynamic_discovery": false,
+                "mcp_tool_description": {
+                    "file": "mcp-tools.json"
+                }
+            },
+            "run_for_functions": [
+                "list_expense_items",
+                "add_expense_receipts",
+                "create_expense_report_draft",
+                "fetch_draft_expense_report",
+                "sign_out",
+                "submit_expense_report"
+            ],
+            "auth": {
+                "type": "OAuthPluginVault",
+                "reference_id": "<your-SSO-registration-ID>"
+            }
+        }
+    ]
+}
