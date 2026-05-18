@@ -414,7 +414,19 @@ Copy the forwarded URL (e.g. `https://<tunnel-id>.devtunnels.ms`) and use it in 
 		 "reference_id": "<your-SSO-registration-ID>"
 	 }
 	 ```
-4. Open [`appPackage/manifest.json`](appPackage/manifest.json) and update `webApplicationInfo` with your Entra app's client ID and Application ID URI:
+4. Open [`appPackage/mcp-tools.json`](appPackage/mcp-tools.json) and update the `clientId` in the `_meta.microsoft/filePermissionGrant` property with your Entra app's client ID (required for file permission grants when using `Files.SelectedOperations.Selected`):
+
+	 ```json
+	 "_meta": {
+		 "microsoft/filePermissionGrant": {
+			 "clientId": "<your-entra-client-id>",
+			 "parameters": [
+				 { "jsonPath": "$.receipts[*].file_url" }
+			 ]
+		 }
+	 }
+	 ```
+5. Open [`appPackage/manifest.json`](appPackage/manifest.json) and update `webApplicationInfo` with your Entra app's client ID and Application ID URI:
 
 	 ```json
 	 "webApplicationInfo": {
@@ -422,8 +434,8 @@ Copy the forwarded URL (e.g. `https://<tunnel-id>.devtunnels.ms`) and use it in 
 		 "resource": "api://<your-entra-client-id>"
 	 }
 	 ```
-5. Zip the [appPackage](appPackage) folder.
-6. Sideload the package into Teams.
+6. Zip the [appPackage](appPackage) folder.
+7. Sideload the package into Teams.
 
 ![Teams sideload](demos/screenshots/sideload.png)
 

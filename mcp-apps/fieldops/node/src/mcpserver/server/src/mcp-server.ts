@@ -170,40 +170,41 @@ export function createMcpServer(): McpServer {
       }).slice(0, maxResults ?? 50);
 
       return {
+        _meta: {},
         content: [
           {
             type: "text",
             text: "Suggested next step: list available technicians and create a dispatch plan.",
           },
         ],
-        structuredContent: {
-          view: "list",
-          assignments: data.map((a) => ({
-            id: a.id,
-            site: a.site,
-            category: a.category,
-            priority: a.priority,
-            slaDue: a.slaDue,
-            estimatedStartDateTime: a.estimatedStartDateTime,
-            estimatedEndDateTime: a.estimatedEndDateTime,
-            description: a.description,
-            requiredSkills: a.requiredSkills,
-            customerName: a.customerName,
-            customerPhone: a.customerPhone,
-            customerProfilePicUrl: a.customerProfilePicUrl,
-            assetId: a.assetId,
-            estimatedDurationMinutes: a.estimatedDurationMinutes,
-            estimatedTechnicianArrivalDateTime:
-              a.estimatedTechnicianArrivalDateTime,
-            assignedTechnicianId: a.assignedTechnicianId,
-            siteImageUrl: a.siteImageUrl,
-            tags: a.tags,
-            status: a.status,
-            address: a.location.address,
-            lat: a.location.lat,
-            lng: a.location.lng,
-          })),
-        },
+        // structuredContent: {
+        //   view: "list",
+        //   assignments: data.map((a) => ({
+        //     id: a.id,
+        //     site: a.site,
+        //     category: a.category,
+        //     priority: a.priority,
+        //     slaDue: a.slaDue,
+        //     estimatedStartDateTime: a.estimatedStartDateTime,
+        //     estimatedEndDateTime: a.estimatedEndDateTime,
+        //     description: a.description,
+        //     requiredSkills: a.requiredSkills,
+        //     customerName: a.customerName,
+        //     customerPhone: a.customerPhone,
+        //     customerProfilePicUrl: a.customerProfilePicUrl,
+        //     assetId: a.assetId,
+        //     estimatedDurationMinutes: a.estimatedDurationMinutes,
+        //     estimatedTechnicianArrivalDateTime:
+        //       a.estimatedTechnicianArrivalDateTime,
+        //     assignedTechnicianId: a.assignedTechnicianId,
+        //     siteImageUrl: a.siteImageUrl,
+        //     tags: a.tags,
+        //     status: a.status,
+        //     address: a.location.address,
+        //     lat: a.location.lat,
+        //     lng: a.location.lng,
+        //   })),
+        // },
       };
     }
   );

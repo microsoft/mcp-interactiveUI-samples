@@ -78,7 +78,7 @@
                     "resourceUri": "ui://expense-report-draft/app.html"
                 },
                 "microsoft/filePermissionGrant": {
-                    "clientId": "3813cbe2-8c81-4f1f-87ac-508f728492ee",
+                    "clientId": "<your-entra-client-id>",
                     "parameters": [
                         { "jsonPath": "$.receipts[*].file_url" }
                     ]
