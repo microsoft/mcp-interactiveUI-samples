@@ -69,7 +69,7 @@ Add the following **delegated** Microsoft Graph permissions:
 
 | Permission | Type | Purpose | Admin consent? |
 |------------|------|---------|----------------|
-| `Files.SelectedOperations.Selected` | Delegated | Read only files the user explicitly attached in the current interaction | **No** — user-consentable |
+| `Files.SelectedOperations.Selected` | Delegated | Read only files the user explicitly attached in the current interaction | **Yes** — typically requires tenant admin consent |
 | `Mail.Read` | Delegated | Read email attachments to auto-match receipts | Depends on tenant policy |
 | `User.Read` | Delegated | Sign-in and read user profile (Entra SSO) | No |
 
@@ -243,7 +243,7 @@ The OBO exchange requires a Graph API scope. There are two options:
 |---|---|---|
 | **Scope** | `https://graph.microsoft.com/Files.Read.All` | `https://graph.microsoft.com/Files.SelectedOperations.Selected` |
 | **Access breadth** | All files the user has access to across OneDrive and SharePoint | Only files the user explicitly selected (attached) in the current interaction |
-| **Admin consent** | Typically requires tenant admin consent | User-consentable — no admin consent required in most tenants |
+| **Admin consent** | Typically requires tenant admin consent | Typically requires tenant admin consent |
 | **Least privilege** | Broad — grants read access to the user's entire file graph | Narrow — scoped to the specific files the user chose to share |
 | **Recommendation** | Use when your tool needs broader file access | **Preferred** — use when your tool only processes user-attached files |
 
