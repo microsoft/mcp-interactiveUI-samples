@@ -13,6 +13,6 @@
     "inspector": "npx @modelcontextprotocol/inspector"
   },
   "devDependencies": {
-    "azurite": "^3.31.0"
+    "azurite": "^3.36.0"
   }
 }
